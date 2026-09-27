@@ -22,6 +22,7 @@ import ru.khudob1n.krasnodar.transport.R
 import ru.khudob1n.krasnodar.transport.settings.Favorites
 import ru.khudob1n.krasnodar.transport.settings.LocalFavorites
 import ru.khudob1n.krasnodar.transport.ui.components.PillButton
+import ru.khudob1n.krasnodar.transport.ui.components.PillGrid
 import ru.khudob1n.krasnodar.transport.ui.theme.AppTheme
 
 /**
@@ -58,10 +59,9 @@ fun FavoritesTransfer() {
             "Избранное хранится только на этом устройстве. Сохраните его в файл, чтобы перенести на другое устройство или на сайт.",
             style = note, color = AppTheme.colors.functional,
         )
-        // Две кнопки в строку на телефоне не помещаются - переносятся.
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            PillButton("Сохранить в файл", { save.launch(Favorites.FILE_NAME) }, icon = R.drawable.tabler_download, enabled = !favorites.value.isEmpty)
-            PillButton("Загрузить из файла", { open.launch(arrayOf("application/json", "application/octet-stream", "text/plain")) }, icon = R.drawable.tabler_upload)
+        PillGrid {
+            button { PillButton("Сохранить в файл", { save.launch(Favorites.FILE_NAME) }, icon = R.drawable.tabler_download, enabled = !favorites.value.isEmpty) }
+            button { PillButton("Загрузить из файла", { open.launch(arrayOf("application/json", "application/octet-stream", "text/plain")) }, icon = R.drawable.tabler_upload) }
         }
         status?.let { Text(it, Modifier.semantics { liveRegion = LiveRegionMode.Polite }, style = note, color = AppTheme.colors.functional) }
     }

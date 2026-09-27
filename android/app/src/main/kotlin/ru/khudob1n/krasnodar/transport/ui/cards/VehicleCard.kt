@@ -47,6 +47,9 @@ import ru.khudob1n.krasnodar.transport.data.Station
 import ru.khudob1n.krasnodar.transport.data.Vehicle
 import ru.khudob1n.krasnodar.transport.domain.plural
 import ru.khudob1n.krasnodar.transport.ui.components.PillButton
+import ru.khudob1n.krasnodar.transport.ui.components.PillGrid
+import ru.khudob1n.krasnodar.transport.ui.components.ShareButton
+import ru.khudob1n.krasnodar.transport.ui.components.ShareLinks
 import ru.khudob1n.krasnodar.transport.ui.components.RouteBadge
 import ru.khudob1n.krasnodar.transport.ui.components.TablerIcon
 import ru.khudob1n.krasnodar.transport.ui.components.TransportType
@@ -102,13 +105,16 @@ fun VehicleCard(
             }
         }
 
-        Row(Modifier.padding(vertical = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            PillButton(
-                if (following) "Не следить" else "Наблюдать за движением",
-                onToggleFollow,
-                icon = R.drawable.tabler_focus_2,
-                iconTint = if (following) type.color else null,
-            )
+        PillGrid(Modifier.padding(vertical = 16.dp)) {
+            button {
+                PillButton(
+                    if (following) "Наблюдаю за движением" else "Наблюдать за движением",
+                    onToggleFollow,
+                    icon = R.drawable.tabler_focus_2,
+                    iconTint = if (following) type.color else null,
+                )
+            }
+            button { ShareButton(ShareLinks.vehicle(vehicle.deviceCode), "${type.nominative.replaceFirstChar { it.uppercase() }} № ${vehicle.routeNumber} на карте транспорта") }
         }
 
         if (direction != null) {

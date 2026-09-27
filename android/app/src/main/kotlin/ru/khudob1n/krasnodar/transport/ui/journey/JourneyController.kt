@@ -24,6 +24,9 @@ import ru.khudob1n.krasnodar.transport.domain.planSchedules
 import ru.khudob1n.krasnodar.transport.domain.prepareEndpoints
 import java.time.ZonedDateTime
 
+/** Подпись точки «где я» - у получателя ссылки своё местоположение. */
+const val MY_LOCATION = "Моё местоположение"
+
 enum class JourneyStatus { Idle, Loading, Done, Error }
 
 /**
@@ -105,6 +108,21 @@ class JourneyController(
         a is JourneyPoint.StopPoint && b is JourneyPoint.StopPoint -> a.id == b.id
         a is JourneyPoint.PlacePoint && b is JourneyPoint.PlacePoint -> a.point == b.point
         else -> false
+    }
+
+    /**
+     * Ссылка «Поделиться» маршрутом - как у сайта: остановка - id, место - «широта,долгота» с
+     * подписью; «Моё местоположение» подписью не уходит - у получателя оно своё.
+     */
+    fun shareUrl(): String? {
+        val a = from ?: return null
+        val b = to ?: return null
+        fun value(p: JourneyPoint) = when (p) {
+            is JourneyPoint.StopPoint -> p.id.toString()
+            is JourneyPoint.PlacePoint -> "%.6f,%.6f".format(java.util.Locale.US, p.point.lat, p.point.lng)
+        }
+        fun label(p: JourneyPoint) = (p as? JourneyPoint.PlacePoint)?.title?.takeIf { it != MY_LOCATION }
+        return ru.khudob1n.krasnodar.transport.ui.components.ShareLinks.journey(value(a), value(b), label(a), label(b))
     }
 
     /** Откуда и куда - одно и то же место. */

@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "ru.khudob1n.krasnodar.transport",
+      "sha256_cert_fingerprints": [
+        "5A:50:43:9A:0B:6B:12:2F:70:9F:FA:9F:1B:FF:16:F8:AE:3E:B7:23:25:47:7C:F9:56:8E:71:56:C7:6B:F3:4A",
+        "EA:2B:F8:43:BB:61:08:4D:74:42:1A:B6:44:84:8B:2C:C0:6B:DA:04:8A:9A:29:EC:87:DD:71:14:81:51:53:CB"
+      ]
+    }
+  }
+]

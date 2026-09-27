@@ -42,6 +42,7 @@ fun FavoriteButton(active: Boolean, subject: String, onToggle: () -> Unit, modif
     val border = if (active) accent.copy(alpha = 0.45f) else colors.functionalTram.copy(alpha = 0.4f)
     Row(
         modifier
+            .pillWidth()
             .scale(if (pressed) 0.97f else 1f)
             .heightIn(min = 38.dp)
             .background(background, AppTheme.shapes.pill)
@@ -51,12 +52,12 @@ fun FavoriteButton(active: Boolean, subject: String, onToggle: () -> Unit, modif
                 contentDescription = if (active) "Убрать $subject из избранного" else "Сохранить $subject в избранное"
                 stateDescription = if (active) "В избранном" else "Не в избранном"
             }
-            .padding(start = 12.dp, end = 14.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+            .padding(pillPadding()),
+        horizontalArrangement = pillArrangement(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (active) TablerIcon(R.drawable.tabler_star_filled, null, Modifier.size(20.dp), tint = accent)
         else SiteIcon("star", 20.dp, null, tint = colors.textPrimary)
-        Text(if (active) "В избранном" else "В избранное", style = AppTheme.type.button, color = colors.textPrimary, maxLines = 1)
+        PillLabel(if (active) "В избранном" else "В избранное", colors.textPrimary)
     }
 }

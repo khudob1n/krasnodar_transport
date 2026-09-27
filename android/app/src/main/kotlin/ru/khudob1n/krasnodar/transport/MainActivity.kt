@@ -19,7 +19,17 @@ import ru.khudob1n.krasnodar.transport.ui.theme.ThemePreference
 import ru.khudob1n.krasnodar.transport.ui.theme.TransportTheme
 
 class MainActivity : ComponentActivity() {
+    /** Ссылка, с которой открыли приложение (или пришла, когда оно уже открыто). */
+    private val link = kotlinx.coroutines.flow.MutableStateFlow<android.net.Uri?>(null)
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        intent.data?.let { link.value = it }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        // При пересоздании экрана (поворот) ссылку второй раз не открываем.
+        if (savedInstanceState == null) link.value = intent?.data
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         val themeStore = ThemeStore(applicationContext)
@@ -41,7 +51,10 @@ class MainActivity : ComponentActivity() {
                     enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
                 }
                 // Приложение открывается сразу картой; статьи сайта - в настройках.
+                val openLink by link.collectAsState()
                 MapScreen(
+                    link = openLink,
+                    onLinkHandled = { link.value = null },
                     theme = preference,
                     onThemeChange = { scope.launch { themeStore.set(it) } },
                     // Переключатель темы - как на сайте: из текущей в противоположную.

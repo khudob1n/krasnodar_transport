@@ -44,6 +44,13 @@ import ru.khudob1n.krasnodar.transport.domain.formatArrival
 import ru.khudob1n.krasnodar.transport.settings.LocalFavorites
 import ru.khudob1n.krasnodar.transport.settings.LocalMapPreferences
 import ru.khudob1n.krasnodar.transport.ui.components.FavoriteButton
+import ru.khudob1n.krasnodar.transport.ui.components.PillGrid
+import ru.khudob1n.krasnodar.transport.ui.components.PillLabel
+import ru.khudob1n.krasnodar.transport.ui.components.ShareButton
+import ru.khudob1n.krasnodar.transport.ui.components.ShareLinks
+import ru.khudob1n.krasnodar.transport.ui.components.pillArrangement
+import ru.khudob1n.krasnodar.transport.ui.components.pillPadding
+import ru.khudob1n.krasnodar.transport.ui.components.pillWidth
 import ru.khudob1n.krasnodar.transport.ui.components.StopBoardSkeleton
 import ru.khudob1n.krasnodar.transport.settings.StopDefaultView
 import ru.khudob1n.krasnodar.transport.domain.stopBoard
@@ -116,22 +123,17 @@ fun StopCard(
                 board is StopBoard.NoMoreToday -> Notice("Сегодня рейсов больше нет", "Следующие отправления — завтра, их видно в расписании")
             }
             val favorites = LocalFavorites.current
-            // С крупным шрифтом кнопки в строку не помещаются - переносятся.
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (!trips.isNullOrEmpty()) {
-                    PillButton(
-                        "Расписание",
-                        onClick = { scheduleOpened = !scheduleOpened },
-                        icon = R.drawable.tabler_calendar_time,
-                    )
+            // Действия - под ближайшими рейсами, сеткой в две колонки, как на сайте: маршрут
+            // первой парой («Отсюда» и «Сюда» всегда рядом), дальше расписание, избранное, поделиться.
+            PillGrid {
+                caption("Построить маршрут")
+                button { JourneyPill("A", "Отсюда") { onJourney(true) } }
+                button { JourneyPill("B", "Сюда") { onJourney(false) } }
+                if (!trips.isNullOrEmpty()) button {
+                    PillButton("Расписание", onClick = { scheduleOpened = !scheduleOpened }, icon = R.drawable.tabler_calendar_time)
                 }
-                FavoriteButton(favorites.value.hasStop(stop.id), "остановку", { favorites.update { it.toggleStop(stop.id) } })
-            }
-            // «Отсюда» и «Сюда» (JourneyStopButtons сайта): подпись объясняет, что делают кнопки.
-            Text("Построить маршрут", style = AppTheme.type.small, color = AppTheme.colors.textSecondary)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                JourneyPill("A", "Отсюда") { onJourney(true) }
-                JourneyPill("B", "Сюда") { onJourney(false) }
+                button { FavoriteButton(favorites.value.hasStop(stop.id), "остановку", { favorites.update { it.toggleStop(stop.id) } }) }
+                button { ShareButton(ShareLinks.stop(stop.id), "Остановка «${stop.name}» на карте транспорта") }
             }
             AnimatedVisibility(scheduleOpened && trips != null) {
                 FullSchedule(trips.orEmpty())
@@ -204,14 +206,14 @@ private fun FullSchedule(trips: List<ScheduleTrip>) {
 @Composable
 private fun JourneyPill(letter: String, label: String, onClick: () -> Unit) {
     Row(
-        Modifier.heightIn(min = 38.dp).background(AppTheme.colors.backgroundSecondary, AppTheme.shapes.pill)
+        Modifier.pillWidth().heightIn(min = 38.dp).background(AppTheme.colors.backgroundSecondary, AppTheme.shapes.pill)
             .border(1.dp, AppTheme.colors.functionalTram.copy(alpha = 0.4f), AppTheme.shapes.pill)
             .clickable(role = Role.Button, onClickLabel = if (letter == "A") "Маршрут отсюда" else "Маршрут сюда", onClick = onClick)
-            .padding(start = 10.dp, end = 14.dp),
+            .padding(pillPadding()),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = pillArrangement(),
     ) {
         JourneyMarker(letter, size = 20)
-        Text(label, style = AppTheme.type.button, color = AppTheme.colors.textPrimary)
+        PillLabel(label, AppTheme.colors.textPrimary)
     }
 }

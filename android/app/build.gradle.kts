@@ -55,6 +55,8 @@ android {
             keyPassword = keystoreProps.getProperty("keyPassword")
         }
     }
+    // Ссылки «Поделиться» всегда ведут на прод: их открывают другие люди.
+    defaultConfig.buildConfigField("String", "SHARE_BASE_URL", "\"https://krasnodar-transport.khudob1n.ru\"")
     buildTypes {
         debug {
             buildConfigField("String", "API_BASE_URL", "\"${apiBaseUrl.getOrElse("http://127.0.0.1:3300")}\"")

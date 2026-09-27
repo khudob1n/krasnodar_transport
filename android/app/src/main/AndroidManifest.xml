@@ -17,10 +17,22 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Ссылки «Поделиться» сайта и приложения (/map?stop=…, ?vehicle=…, ?from=…&to=…):
+                 при установленном приложении открывают его. Домен подтверждается файлом
+                 /.well-known/assetlinks.json на сайте (passenger/client/public). -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:host="krasnodar-transport.khudob1n.ru" />
+                <data android:path="/map" />
             </intent-filter>
         </activity>
     </application>

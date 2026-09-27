@@ -50,6 +50,7 @@ import ru.khudob1n.krasnodar.transport.settings.StartView
 import ru.khudob1n.krasnodar.transport.settings.StopDefaultView
 import ru.khudob1n.krasnodar.transport.ui.cards.CardDivider
 import ru.khudob1n.krasnodar.transport.ui.components.PillButton
+import ru.khudob1n.krasnodar.transport.ui.components.PillGrid
 import ru.khudob1n.krasnodar.transport.ui.components.TablerIcon
 import ru.khudob1n.krasnodar.transport.ui.theme.AppTheme
 import ru.khudob1n.krasnodar.transport.ui.theme.ThemePreference
@@ -119,7 +120,7 @@ fun SettingsCard(
                 SizeSlider("Железнодорожные станции", "Вокзалы и платформы", s.rail) { v -> set { it.copy(rail = v) } }
                 SizeSlider("Аэропорт", null, s.airport) { v -> set { it.copy(airport = v) } }
                 SizeSlider("Прочие объекты", "Автовокзалы", s.other) { v -> set { it.copy(other = v) } }
-                PillButton("Сбросить", { set { IconSizes() } }, icon = R.drawable.tabler_restore, enabled = !s.isDefault)
+                PillGrid { button { PillButton("Сбросить", { set { IconSizes() } }, icon = R.drawable.tabler_restore, enabled = !s.isDefault) } }
             }
         }
         // Пустой «заголовок» выталкивает мини-карту: она прилипает только над слоями и размерами,
@@ -163,10 +164,10 @@ fun SettingsCard(
             ResetAll(onResetAll)
             CardDivider()
             // Справка и версия внизу (About сайта); «О проекте» и «Откуда данные» на сайте - на главной.
-            Column(Modifier.padding(start = 22.dp, end = 22.dp, top = 18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                PillButton("Как пользоваться картой", { onOpenArticle("kak-chitat-kartu") }, icon = R.drawable.tabler_book)
-                PillButton("О проекте", { onOpenArticle("o-proekte") }, icon = R.drawable.tabler_info_circle)
-                PillButton("Откуда данные", { onOpenArticle("istochniki-dannyh") }, icon = R.drawable.tabler_book)
+            PillGrid(Modifier.padding(start = 22.dp, end = 22.dp, top = 18.dp)) {
+                button { PillButton("О проекте", { onOpenArticle("o-proekte") }, icon = R.drawable.tabler_info_circle) }
+                button { PillButton("Откуда данные", { onOpenArticle("istochniki-dannyh") }, icon = R.drawable.tabler_book) }
+                button { PillButton("Как пользоваться картой", { onOpenArticle("kak-chitat-kartu") }, icon = R.drawable.tabler_book) }
             }
             Text(
                 "Версия ${BuildConfig.VERSION_NAME}",
@@ -304,12 +305,12 @@ private fun ResetAll(onReset: () -> Unit) {
             style = AppTheme.type.small.copy(lineHeight = 18.sp),
             color = AppTheme.colors.functional,
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        PillGrid {
             if (confirming) {
-                PillButton("Да, сбросить всё", { confirming = false; onReset() }, icon = R.drawable.tabler_trash, danger = true)
-                PillButton("Отмена", { confirming = false }, icon = R.drawable.tabler_x)
+                button { PillButton("Да, сбросить всё", { confirming = false; onReset() }, icon = R.drawable.tabler_trash, danger = true) }
+                button { PillButton("Отмена", { confirming = false }, icon = R.drawable.tabler_x) }
             } else {
-                PillButton("Сбросить всё", { confirming = true }, icon = R.drawable.tabler_trash)
+                button { PillButton("Сбросить всё", { confirming = true }, icon = R.drawable.tabler_trash) }
             }
         }
     }

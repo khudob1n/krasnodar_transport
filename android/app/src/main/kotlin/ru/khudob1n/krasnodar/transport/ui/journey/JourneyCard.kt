@@ -51,6 +51,8 @@ import ru.khudob1n.krasnodar.transport.domain.plural
 import ru.khudob1n.krasnodar.transport.domain.visibleLegIndices
 import ru.khudob1n.krasnodar.transport.ui.cards.CardDivider
 import ru.khudob1n.krasnodar.transport.ui.components.PillButton
+import ru.khudob1n.krasnodar.transport.ui.components.PillGrid
+import ru.khudob1n.krasnodar.transport.ui.components.ShareButton
 import ru.khudob1n.krasnodar.transport.ui.components.RouteBadge
 import ru.khudob1n.krasnodar.transport.ui.components.TablerIcon
 import ru.khudob1n.krasnodar.transport.ui.components.color
@@ -130,7 +132,10 @@ fun JourneyCard(journey: JourneyController, onEditField: (JourneyField) -> Unit,
                     "Время в пути примерное: пробки и задержки не учтены." + if (ago >= 1) " Посчитано ${ago.toInt()} мин назад." else "",
                     style = note, color = colors.functional,
                 )
-                PillButton("Обновить", journey::refresh, icon = R.drawable.tabler_refresh)
+                PillGrid {
+                    journey.shareUrl()?.let { url -> button { ShareButton(url, "Маршрут на карте транспорта") } }
+                    button { PillButton("Обновить", journey::refresh, icon = R.drawable.tabler_refresh) }
+                }
             }
         }
     }

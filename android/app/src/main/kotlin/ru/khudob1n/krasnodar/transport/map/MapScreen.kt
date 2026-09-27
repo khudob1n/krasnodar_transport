@@ -124,6 +124,8 @@ internal fun createMapView(context: android.content.Context, background: Int, te
 
 @Composable
 fun MapScreen(
+    link: android.net.Uri?,
+    onLinkHandled: () -> Unit,
     theme: ThemePreference,
     onThemeChange: (ThemePreference) -> Unit,
     onToggleTheme: () -> Unit,
@@ -190,7 +192,15 @@ fun MapScreen(
     val typing = rememberTypingPlaceholder(examples, active = !searchOpen)
 
     fun flyTo(lat: Double, lng: Double, zoom: Double) {
-        map?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat, lng), zoom), 700)
+        // Объект - над карточкой, которая сейчас откроется (62 % высоты снизу), а не под ней
+        // (flyToVisible сайта).
+        val bottom = mapView.height * 0.62
+        map?.animateCamera(
+            CameraUpdateFactory.newCameraPosition(
+                CameraPosition.Builder().target(LatLng(lat, lng)).zoom(zoom).padding(0.0, 0.0, 0.0, bottom).build(),
+            ),
+            700,
+        )
     }
 
     fun onSearchPick(pick: SearchPick) {
@@ -341,6 +351,45 @@ fun MapScreen(
             journeyLines(it, catalog, journeyPointOf, walkRoutes, { t -> when (t) { TransportType.Bus -> colors.bus; TransportType.Troll -> colors.troll; TransportType.Tram -> colors.tram }.toArgb() }, colors.walk.toArgb())
         })
     }
+    // Ссылка «Поделиться» (MapDeepLink сайта): ?stop=, ?vehicle=, ?from=&to= (с fromName/toName).
+    // Ждём справочник (и машины для ?vehicle=), потом открываем объект поверх всего.
+    LaunchedEffect(link, catalog, vehicles) {
+        val uri = link ?: return@LaunchedEffect
+        val c = catalog ?: return@LaunchedEffect
+        fun point(value: String?, name: String?): JourneyPoint? {
+            value ?: return null
+            value.toLongOrNull()?.let { id -> c.stopsById[id]?.let { return JourneyPoint.StopPoint(id, it.name) } }
+            val parts = value.split(',').mapNotNull { it.trim().toDoubleOrNull() }
+            return if (parts.size == 2) JourneyPoint.PlacePoint(LatLngPoint(parts[0], parts[1]), name ?: "Точка на карте") else null
+        }
+        val stopId = uri.getQueryParameter("stop")?.toLongOrNull()
+        val vehicleId = uri.getQueryParameter("vehicle")
+        val from = point(uri.getQueryParameter("from"), uri.getQueryParameter("fromName"))
+        val to = point(uri.getQueryParameter("to"), uri.getQueryParameter("toName"))
+        // Машины ещё не пришли - ждём следующего обновления.
+        if (vehicleId != null && vehicles.isEmpty()) return@LaunchedEffect
+        info = null
+        settingsOpen = false
+        searchOpen = false
+        when {
+            from != null || to != null -> {
+                journey.setBoth(from, to)
+                selection = null
+                journeyOpen = true
+            }
+            stopId != null -> c.stopsById[stopId]?.let { stop ->
+                selection = MapSelection.Stop(stop.id)
+                flyTo(stop.lat, stop.lng, 16.0)
+            }
+            vehicleId != null -> vehicles.firstOrNull { it.deviceCode == vehicleId }?.let { v ->
+                // Машина закончила смену - просто карта.
+                selection = MapSelection.Vehicle(v.deviceCode)
+                flyTo(v.lat, v.lng, 16.0)
+            }
+        }
+        onLinkHandled()
+    }
+
     // Навигатор: карта крупно показывает текущий шаг (на последнем - точку B).
     LaunchedEffect(journey.navStep, shownJourney) {
         val j = shownJourney ?: return@LaunchedEffect
