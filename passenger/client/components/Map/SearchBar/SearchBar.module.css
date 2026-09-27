@@ -1,0 +1,290 @@
+.MapSearchBar {
+    --search-border-width: 4px;
+    --search-border-color: rgba(230, 228, 224, 0.64);
+    --search-mobile-mini-width: 116px;
+    --search-inner-border-radius: 16px;
+    --search-outer-border-radius: calc(var(--search-inner-border-radius) + var(--search-border-width));
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    max-width: 448px;
+    height: max-content;
+    max-height: calc(45vh - 100px);
+
+    --smooth-corners: 0.8;
+    border-radius: var(--search-outer-border-radius);
+    border: var(--search-border-width) solid transparent;
+
+    background-color: transparent;
+
+    transition: 150ms width ease-out, 150ms border-radius ease-out, 150ms border-color ease-out, 150ms background-color ease-out;
+}
+
+:global([data-theme='dark']) .MapSearchBar {
+    --search-border-color: rgba(255, 255, 255, 0.16);
+}
+
+.MapSearchBar_withText,
+.MapSearchBar:focus-within {
+    border-color: var(--search-border-color);
+    border-radius: var(--search-outer-border-radius);
+    background-color: var(--search-border-color);
+}
+
+.MapSearchBar__form {
+    display: flex;
+    position: relative;
+
+    height: 48px;
+    width: 100%;
+
+    --smooth-corners: 0.8;
+    border-radius: var(--search-inner-border-radius);
+
+    background-color: var(--background-primary);
+    gap: 8px;
+
+    transition: 150ms width ease-out, 150ms border-radius ease-out;
+}
+
+.MapSearchBar__form::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+
+    mask-image: url('/icons/search.svg');
+    -webkit-mask-image: url('/icons/search.svg');
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-mode: alpha;
+    background-color: var(--text-primary);
+    pointer-events: none;
+}
+
+.MapSearchBar_withText > .MapSearchBar__form,
+.MapSearchBar__form:focus-within {
+    border-radius: var(--search-inner-border-radius);
+}
+
+.MapSearchBar__form_withResult {
+    border-radius: 16px 16px 0px 0px;
+}
+
+.MapSearchBar__input {
+    width: 100%;
+    padding: 12px 16px 12px 48px;
+    border: none;
+    outline: none;
+
+    font-family: inherit;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+
+    color: var(--text-primary);
+    background-color: transparent;
+
+    &::placeholder {
+        color: var(--text-primary);
+        opacity: 1;
+    }
+
+    &:focus::placeholder {
+        opacity: 0;
+    }
+
+    /* Пока в поле «печатаются» примеры - они бледнее, чтобы не путать их с введённым текстом. */
+    &.MapSearchBar__input_typing::placeholder {
+        opacity: 0.5;
+    }
+
+    &::-webkit-search-cancel-button {
+        appearance: none;
+        background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTYgNkwxOCAxOE02IDE4TDE4IDYiIHN0cm9rZT0iIzlCQUFDMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0ic3F1YXJlIi8+Cjwvc3ZnPgoK);
+        background-size: contain;
+        opacity: 1;
+        pointer-events: all;
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+        margin: 0;
+    }
+
+    &::-webkit-search-decoration {
+        display: none;
+    }
+}
+
+/* Список сплошной, без зазоров между пунктами: рамка поиска полупрозрачная, и в зазоры
+   просвечивала карта - между строками шли пёстрые полосы. */
+.MapSearchBar__results {
+    display: flex;
+    flex-direction: column;
+
+    overflow: auto;
+
+    border-radius: 0px 0px 16px 16px;
+    background-color: var(--background-primary);
+}
+
+.MapSearchBar__group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Заголовок раздела прилипает к верху списка: при прокрутке длинной выдачи видно, в каком
+   разделе сейчас находишься. */
+.MapSearchBar__groupTitle {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0;
+    padding: 10px 12px 6px;
+
+    color: var(--text-secondary);
+    background-color: var(--background-primary);
+
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 16px;
+}
+
+.MapSearchBar__groupCount {
+    color: var(--functional);
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+}
+
+.MapSearchBar__more {
+    margin: 0;
+    padding: 8px 12px 12px;
+    color: var(--functional);
+    font-size: 13px;
+    line-height: 16px;
+}
+
+/* На компьютере выдача может быть выше: снизу её ограничивает только панель избранного
+   (не выше 45vh от нижнего края), а экранной клавиатуры нет. На высоте 768 px это ~7 строк
+   вместо трёх с половиной. */
+@media screen and (min-width: 769px) {
+    .MapSearchBar {
+        max-height: calc(55vh - 60px);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .MapSearchBar {
+        /* Свёрнутый поиск на телефоне занимает всё место до кнопок справа (4 × 48px, зазоры
+           8px, отступ 16px - MapMainContainer.module.css), а не узкие 116px: так в него удобно
+           попасть пальцем и видно подсказку. */
+        --search-mobile-mini-width: clamp(116px, calc(100vw - 276px), 400px);
+        width: calc(var(--search-mobile-mini-width) + 2 * var(--search-border-width));
+        max-width: none;
+
+        border-color: transparent;
+        border-radius: 40px;
+    }
+
+    .MapSearchBar:focus-within,
+    .MapSearchBar_withText {
+        width: 100%;
+        border-radius: var(--search-outer-border-radius);
+        border-color: var(--search-border-color);
+    }
+
+    .MapSearchBar__form {
+        width: var(--search-mobile-mini-width);
+        border-radius: 40px;
+    }
+
+    .MapSearchBar__form:focus-within,
+    .MapSearchBar_withText > .MapSearchBar__form {
+        border-radius: var(--search-inner-border-radius);
+        width: 100%;
+    }
+
+    .MapSearchBar__input {
+        &::-webkit-search-cancel-button {
+            display: none;
+        }
+    }
+
+    .MapSearchBar__input:focus,
+    .MapSearchBar_withText .MapSearchBar__input {
+        &::-webkit-search-cancel-button {
+            display: block;
+        }
+    }
+}
+
+/* Узкий телефон: кнопки справа здесь 44px с отступом 12px (MapMainContainer.module.css) -
+   свёрнутый поиск той же высоты и на той же линии. Отступ до края набирается из padding
+   сайдбара (8px здесь) и прозрачной рамки поиска (4px). Слово «Поиск» при прежней ширине
+   упиралось в правый край - поле шире, а отступы текста меньше. */
+@media screen and (max-width: 400px) {
+    /* Здесь кнопки 44px с зазором 6px и отступом 12px. */
+    .MapSearchBar {
+        --search-mobile-mini-width: max(120px, calc(100vw - 242px));
+    }
+
+    .MapSearchBar__form {
+        height: 44px;
+    }
+
+    .MapSearchBar__form::before {
+        left: 14px;
+    }
+
+    .MapSearchBar__input {
+        padding: 10px 12px 10px 46px;
+    }
+}
+
+/* Совсем узкий экран: кнопки справа 40px, зазор 4px, отступ 8px. */
+@media screen and (max-width: 349px) {
+    .MapSearchBar {
+        --search-mobile-mini-width: max(104px, calc(100vw - 212px));
+    }
+
+    .MapSearchBar__form {
+        height: 40px;
+    }
+
+    .MapSearchBar__input {
+        padding: 8px 12px 8px 46px;
+    }
+}
+
+/* Обёртка результата для истории поиска - в раскладке не участвует. */
+.MapSearchBar__remembered {
+    display: contents;
+}
+
+/* «Очистить» в заголовке раздела «Недавние» - справа, как ссылка. */
+.MapSearchBar__groupAction {
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    color: var(--functional);
+    background: none;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: normal;
+    cursor: pointer;
+}
+
+.MapSearchBar__groupAction:hover {
+    color: var(--text-primary);
+}

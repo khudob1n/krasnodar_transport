@@ -1,0 +1,109 @@
+.MapNearby {
+    padding-bottom: 8px;
+    border-radius: 16px;
+    color: var(--text-primary);
+    background-color: var(--background-primary);
+}
+
+.MapNearbyHeader {
+    /* Справа место под крестик закрытия Sidepage. */
+    padding: 18px 80px 18px 22px;
+}
+
+.MapNearbyHeader h4 {
+    font-weight: 700;
+}
+
+.MapNearbyHeader .MapNearbyNote {
+    margin: 6px 0 0;
+}
+
+.MapNearbyNote {
+    margin: 0;
+    color: var(--functional);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.MapNearbyPadded {
+    padding: 14px 22px;
+}
+
+.MapNearbyList {
+    margin: 0;
+    padding: 8px;
+    list-style: none;
+}
+
+.MapNearbyStop {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 8px;
+    border: none;
+    border-radius: 10px;
+    color: inherit;
+    background: none;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+@media (hover) {
+    .MapNearbyStop:hover {
+        background: var(--background-secondary);
+    }
+}
+
+.MapNearbyStop:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: -2px;
+}
+
+.MapNearbyIcon {
+    flex: none;
+    width: 28px;
+    height: 28px;
+}
+
+.MapNearbyBody {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+}
+
+.MapNearbyTitle {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 22px;
+}
+
+.MapNearbyDistance {
+    flex: none;
+    color: var(--functional);
+    font-size: 13px;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+}
+
+.MapNearbyArrivals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin-top: 2px;
+}
+
+.MapNearbyArrival {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,73 @@
+.CardTransportA11y {
+    font-size: 1.5em;
+}
+
+.CardTransportA11yList {
+    display: flex;
+    gap: 1em;
+    margin: 0;
+    fill: currentColor;
+}
+
+.CardTransportA11yItem {
+    display: flex;
+    align-items: center;
+    gap: .15em;
+    font-weight: 500;
+    line-height: 1.35;
+}
+
+.CardTransportA11yItem img {
+    width: .9em;
+}
+
+.CardTransportA11yItem dt {
+    font-size: 0;
+}
+
+.CardTransportA11yItem dd {
+    margin: 0;
+}
+
+.CardTransportA11y__Icon {
+    width: .9em;
+    height: 1em;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: contain;
+}
+
+.CardTransportA11y__Icon_Bus {
+    background-image: url(./icon-bus.svg);
+}
+
+.CardTransportA11y__Icon_Tram {
+    background-image: url(./icon-tram.svg);
+}
+
+.CardTransportA11y__Icon_Troll {
+    background-image: url(./icon-troll.svg);
+}
+
+a:hover .CardTransportA11y__Icon {
+    filter: brightness(0) invert(1);
+}
+
+@media screen and (min-width: 576px) {
+    .CardTransportA11y {
+        font-size: 2.5em;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .CardTransportA11y {
+        font-size: 2.7em;
+    }
+}
+
+
+@media screen and (min-width: 1600px) {
+    .CardTransportA11y {
+        font-size: 3.2em;
+    }
+}

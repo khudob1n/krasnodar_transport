@@ -1,0 +1,102 @@
+@import './font';
+@import './colors';
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+    font-family: 'Onest', sans-serif;
+    height: 100%;
+    color: var(--text-primary);
+    background: var(--background-primary);
+}
+
+#__next {
+    height: 100%;
+    overflow-y: auto;
+}
+
+a {
+    color: inherit;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Колонка кнопок справа внизу: «Маршрут», масштаб, «Где я». Порядок задают order у
+   контролов (Leaflet вставляет нижние контролы в обратном порядке), зазор - явный: раньше
+   высота колонки была подогнана под два блока, и третий съедал все промежутки. */
+.leaflet-control-container .leaflet-bottom.leaflet-right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    margin: 16px;
+}
+
+.leaflet-control-container .leaflet-bottom.leaflet-right > div {
+    margin: 0;
+}
+
+.leaflet-container {
+	background: var(--map-bg) !important;
+    /* У самого leaflet.css здесь свой дефолт (Helvetica Neue) - перекрываем его на Onest,
+       как и в остальном интерфейсе. Для подписей на самой карте это не имеет значения - их
+       рисует MapLibre на canvas через глифы style.json (JetBrains Mono, см.
+       public/map-style-*.json и public/fonts/JetBrains Mono Regular/*.pbf), а не через CSS. */
+    font-family: 'Onest', sans-serif !important;
+}
+
+@media screen and (max-width: 768px) {
+    /* TODO ecosystem fix */
+    [class*="modal__toggle"] > div {
+        transform: scale(.632) translateY(-12px) translateX(11px);
+        transform-origin: left bottom;
+    }
+}
+
+/* Пока anime.js ведёт цвета темы (hooks/useThemeTransition.ts), собственные CSS-переходы
+   элементов выключены: иначе каждый кадр смены переменной перезапускал бы, например,
+   160-мс transition фона карточек, и они отставали бы от остальной страницы. */
+:root[data-theme-transition] *,
+:root[data-theme-transition] *::before,
+:root[data-theme-transition] *::after {
+    transition: none !important;
+}
+
+/* Размеры значков карты (components/IconSizesProvider.tsx). Базовые множители меняет экран
+   настроек на карте; итоговый масштаб вида = общий x свой. Маркеры применяют его свойством
+   scale к внутреннему элементу, а не к тому, что двигает Leaflet, - позиции не съезжают. */
+:root {
+    --icon-scale-all: 1;
+    --icon-scale-vehicles: 1;
+    --icon-scale-stops: 1;
+    --icon-scale-rail: 1;
+    --icon-scale-airport: 1;
+    --icon-scale-other: 1;
+
+    --icon-scale-vehicles-effective: calc(var(--icon-scale-all) * var(--icon-scale-vehicles));
+    --icon-scale-stops-effective: calc(var(--icon-scale-all) * var(--icon-scale-stops));
+    --icon-scale-rail-effective: calc(var(--icon-scale-all) * var(--icon-scale-rail));
+    --icon-scale-airport-effective: calc(var(--icon-scale-all) * var(--icon-scale-airport));
+    --icon-scale-other-effective: calc(var(--icon-scale-all) * var(--icon-scale-other));
+}
+
+/* Настройка «Уменьшить движение» (data-reduce-motion ставит MapPreferencesProvider): то же, что
+   системный prefers-reduced-motion, но по выбору в настройках. Бесконечные анимации (пульсация
+   выбранной остановки, скелетоны) проигрываются мгновенно один раз и замирают. */
+:root[data-reduce-motion] *,
+:root[data-reduce-motion] *::before,
+:root[data-reduce-motion] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* Подписи на карте выключены в настройках. Подпись выбранной остановки оставляем - иначе
+   после выбора в поиске непонятно, какую остановку открыли. */
+:root[data-map-no-labels] .leaflet-tooltip[class*='MapStopsItemLabel__']:not([class*='MapStopsItemLabel_active']) {
+    display: none;
+}

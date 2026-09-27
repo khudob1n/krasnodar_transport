@@ -1,0 +1,44 @@
+.CardMap,
+.CardMap__Widget,
+.CardMap__NonClick {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+.CardMap__Widget {
+    z-index: 0;
+    overflow: hidden;
+}
+.CardMap__Widget * {
+    pointer-events: none;
+}
+.CardMap__NonClick {
+    z-index: 1;
+    background: linear-gradient(
+        90deg,
+        var(--cards-public-bg) 0%,
+        var(--cards-public-bg) 50%,
+        color-mix(in srgb, var(--cards-public-bg) 95%, transparent) 55%,
+        color-mix(in srgb, var(--cards-public-bg) 65%, transparent) 63%,
+        color-mix(in srgb, var(--cards-public-bg) 25%, transparent) 72%,
+        transparent 82%
+    );
+}
+@media (max-width: 599px) {
+    .CardMap__Widget {
+        top: auto;
+        height: 210px;
+    }
+    .CardMap__NonClick {
+        background: linear-gradient(
+            180deg,
+            var(--cards-public-bg) 0%,
+            var(--cards-public-bg) calc(100% - 180px),
+            color-mix(in srgb, var(--cards-public-bg) 85%, transparent) calc(100% - 145px),
+            color-mix(in srgb, var(--cards-public-bg) 35%, transparent) calc(100% - 90px),
+            transparent 100%
+        );
+    }
+}

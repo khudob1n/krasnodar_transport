@@ -1,0 +1,81 @@
+:root {
+    --background-primary: white;
+    --text-primary: black;
+    --background-secondary: #F2F2F2;
+    --text-secondary: #1E2841;
+
+    /* Логотип (components/MainPage/Logo.svg): красный круг с белой стрелкой, в тёмной теме наоборот. */
+    --logo-circle: #B10000;
+    --logo-arrow: #ffffff;
+
+    --functional: #55647D;
+    --functional-tram: #9BAAC3;
+
+    --bus: #00B400;
+    --bus-translucent: #6DC76D;
+    --tram: #FF640F;
+    --tram-translucent: #ED9F74;
+    --troll: #00B4FF;
+    --troll-translucent: #80D9FF;
+    /* Поезда (ж/д станции и платформы). Прежний #7E2AC8 на тёмной карте давал контраст
+       2.6:1 и терялся; этот светлее и держит >= 3.9:1 и на светлом, и на тёмном фоне,
+       поэтому, как и цвета автобуса/трамвая/троллейбуса, один на обе темы. */
+    --train: #9747FF;
+    /* Автовокзалы. Красный, чтобы не путать с зелёными автобусами на карте. Оттенок уведён в
+       малиновый (349°): прежний #E63223 (5°) тянул в оранжевый и спорил с трамваями (#FF640F).
+       Держит >= 4:1 и на светлом, и на тёмном фоне. */
+    --bus-terminal: #E5294A;
+    /* Пешеход - заливка кнопок, когда текущий этап пеший («Дальше», «Поехали» без транспорта).
+       Графит, как иконка пешехода: пеший этап не спорит с цветами транспорта. */
+    --walk: #3A4150;
+    /* Иконка пешехода в шагах маршрута - графит: акценты в карточке маршрута - цвета
+       транспорта, пеший шаг их не перебивает. Темнее серого текста, мягче чёрного. */
+    --walk-icon: #3A4150;
+
+    --cards-pedestrian-bg: #FAF4EF;
+    --cards-pedestrian-bg-hover: #FF640F;
+    --cards-pedestrian-text: #4C3F00;
+    --cards-public-bg: #F5FBF5;
+    --cards-public-bg-hover: #00B400;
+    --cards-public-text: #044815;
+    --cards-car-bg: #FEF6F6;
+    --cards-car-bg-hover: #E63223;
+    --cards-car-text: #5C110A;
+    --cards-other-bg: #F8F9FC;
+    --cards-other-bg-hover: #00B4FF;
+    --cards-other-text: #0C1B27;
+
+    --map-bg: #f7f7f5;
+}
+
+/* Тёмная тема - переключается атрибутом data-theme на <html> (см. components/ThemeProvider.tsx,
+   components/UI/ThemeToggle). Акцентные/бренд-цвета (bus/tram/troll, *-bg-hover) не меняем -
+   они достаточно яркие и читаются на обоих фонах. */
+:root[data-theme='dark'] {
+    --background-primary: #16181c;
+    --text-primary: #f0f1f4;
+    --background-secondary: #1f2228;
+    --text-secondary: #c7cddc;
+
+    --logo-circle: #ffffff;
+    --logo-arrow: #B10000;
+
+    --functional: #97a3ba;
+    --functional-tram: #6c7690;
+
+    --cards-pedestrian-bg: #241f14;
+    --cards-pedestrian-text: #f5dfa8;
+    --cards-public-bg: #0f1f13;
+    --cards-public-text: #bdf0c6;
+    --cards-car-bg: #24120f;
+    --cards-car-text: #f6c7c0;
+    --cards-other-bg: #12161f;
+    --cards-other-text: #cfe6fb;
+
+    --map-bg: #010508;
+
+    /* Графит для тёмной карточки - светлый, иначе иконка потерялась бы на фоне. */
+    --walk-icon: #B4BBC8;
+    /* Заливка кнопки на тёмной карточке - графит посветлее фона, с белым текстом. */
+    --walk: #4A5263;
+}

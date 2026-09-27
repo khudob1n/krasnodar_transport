@@ -1,0 +1,300 @@
+.RailSchedule {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 4px;
+}
+
+.RailScheduleFilter {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    width: fit-content;
+    padding: 2px 0;
+    border: 0;
+    color: var(--text-secondary);
+    background: none;
+    font: inherit;
+    font-size: 13px;
+    line-height: 18px;
+    cursor: pointer;
+}
+
+.RailScheduleFilterArrow {
+    width: 16px;
+    height: 16px;
+    color: var(--functional-tram);
+    transition: transform 0.2s ease;
+    transform: rotate(180deg);
+}
+
+.RailScheduleFilterArrowCollapsed {
+    transform: rotate(0deg);
+}
+
+.RailScheduleList {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--background-secondary);
+    border-radius: 12px;
+}
+
+.RailScheduleItem {
+    display: grid;
+    grid-template-columns: 62px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 11px;
+    min-height: 62px;
+    padding: 9px 11px;
+    border-top: 1px solid var(--background-secondary);
+}
+
+.RailScheduleItemWithLogo {
+    grid-template-columns: 62px 28px minmax(0, 1fr) auto;
+}
+
+.RailScheduleLogo {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    box-sizing: border-box;
+    border-radius: 7px;
+    object-fit: cover;
+    color: var(--text-secondary);
+    background: var(--background-secondary);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.RailScheduleLogo {
+    overflow: hidden;
+}
+
+.RailScheduleLogoLoading {
+    animation: rail-schedule-pulse 1.2s ease-in-out infinite alternate;
+}
+
+.RailScheduleLogoImage {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.RailScheduleLogoImageLoaded {
+    opacity: 1;
+}
+
+.RailScheduleItem:first-child {
+    border-top: 0;
+}
+
+.RailScheduleTime {
+    display: flex;
+    flex-direction: column;
+}
+
+.RailScheduleTime time {
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22px;
+    font-variant-numeric: tabular-nums;
+}
+
+.RailScheduleTime small {
+    color: var(--ScheduleAccent, var(--functional));
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 14px;
+    white-space: nowrap;
+}
+
+.RailScheduleTrip {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+}
+
+.RailScheduleTrip strong {
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 19px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.RailScheduleTrip span {
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Путь или терминал - маленькой плашкой справа. */
+.RailSchedulePlatform {
+    justify-self: end;
+    padding: 3px 7px;
+    border-radius: 6px;
+    color: var(--text-primary);
+    background: var(--background-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 14px;
+    white-space: nowrap;
+}
+
+.RailScheduleEmpty {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 17px;
+}
+
+/* Ссылка на Яндекс Расписания - отдельная строка-кнопка, чтобы было видно, что она кликабельна
+   и уводит на другой сайт (иконка внешней ссылки справа). */
+.RailScheduleSource {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--background-secondary);
+    border-radius: 12px;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+/* Карточка лежит внутри .leaflet-container, а leaflet.css красит там все ссылки в синий
+   (.leaflet-container a) - у одиночного класса специфичность ниже, поэтому утяжеляем. */
+.RailSchedule a.RailScheduleSource {
+    color: var(--text-primary);
+}
+
+.RailScheduleSource:hover {
+    background: var(--background-secondary);
+}
+
+.RailScheduleSource:focus-visible {
+    outline: 2px solid var(--functional-tram);
+    outline-offset: 2px;
+}
+
+.RailScheduleSourceText {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.RailScheduleSourceText strong {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 19px;
+}
+
+.RailScheduleSourceText span {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.RailScheduleSourceIcon {
+    flex: none;
+    color: var(--functional-tram);
+}
+
+.VisuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.RailScheduleMore {
+    width: 100%;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 10px;
+    color: var(--text-primary);
+    background: var(--background-secondary);
+    font: inherit;
+    font-size: 13px;
+    line-height: 18px;
+    cursor: pointer;
+}
+
+.RailScheduleMore:focus-visible,
+.RailScheduleFilter:focus-visible {
+    outline: 2px solid var(--functional-tram);
+    outline-offset: 2px;
+}
+
+.RailScheduleLoading {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.RailScheduleLoading span {
+    height: 58px;
+    border-radius: 10px;
+    background: var(--background-secondary);
+    opacity: 0.7;
+    animation: rail-schedule-pulse 1.2s ease-in-out infinite alternate;
+}
+
+.RailScheduleLoading span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.RailScheduleLoading span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes rail-schedule-pulse {
+    to {
+        opacity: 0.35;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .RailScheduleItem {
+        grid-template-columns: 60px minmax(0, 1fr);
+    }
+
+    .RailScheduleItemWithLogo {
+        grid-template-columns: 60px 28px minmax(0, 1fr);
+    }
+
+    .RailSchedulePlatform {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    .RailScheduleItemWithLogo .RailSchedulePlatform {
+        grid-column: 3;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .RailScheduleLogoLoading,
+    .RailScheduleLoading span {
+        animation: none;
+    }
+
+    .RailScheduleLogoImage {
+        transition: none;
+    }
+}

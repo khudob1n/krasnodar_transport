@@ -1,0 +1,259 @@
+.MapRouteSidebar {
+    color: var(--text-secondary);
+    background-color: var(--background-primary);
+    height: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 24px;
+}
+
+.MapRouteSidebarHeader {
+    padding: 16px 80px 0 22px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Кнопка избранного идёт сразу за номером маршрута, а не у правого края: там она стояла
+   вплотную к крестику закрытия и читалась как часть пары значков. padding-right в 80px
+   оставляет место под сам крестик. */
+.MapRouteSidebarHeader > button:last-child {
+    margin-left: 8px;
+}
+
+.MapRouteSidebarDirectionInfo {
+    padding: 16px 16px 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.MapRouteSidebarSwapButton {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--background-secondary);
+    color: var(--functional-tram);
+    cursor: pointer;
+    transition: color 150ms ease-out;
+}
+
+.MapRouteSidebarSwapButton:hover {
+    color: var(--vehicle-color);
+}
+
+.MapRouteSidebarDirection {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    position: relative;
+    padding-left: 21px;
+}
+
+.MapRouteSidebarHeaderStation {
+    position: relative;
+}
+
+.MapRouteSidebarHeaderStation h4 {
+    font-weight: 700;
+}
+
+.MapRouteSidebarHeaderStation:first-of-type {
+    padding-bottom: 8px;
+}
+
+.MapRouteSidebarHeaderStation::before {
+    content: '';
+    width: 3px;
+    position: absolute;
+    left: -18px;
+    background-color: var(--functional-tram);
+}
+
+.MapRouteSidebarHeaderStation:first-of-type::before {
+    top: 50%;
+    bottom: 0;
+}
+
+.MapRouteSidebarHeaderStation:last-of-type::before {
+    top: 0;
+    bottom: 50%;
+}
+
+.MapRouteSidebarHeaderBullet {
+    position: absolute;
+    top: 50%;
+    border-radius: 50%;
+    height: 11px;
+    width: 11px;
+    background-color: white;
+    left: -22px;
+    border: 3px solid var(--functional-tram);
+    transform: translateY(-100%);
+}
+
+.MapRouteSidebarHeaderBullet_fill {
+    background-color: var(--functional-tram);
+    transform: translateY(-50%);
+}
+
+.MapRouteSidebarDirectionsWrapper {
+    padding: 0 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.MapRouteSidebarDirectionsHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.MapRouteSidebarDirectionsTitle {
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.MapRouteSidebarDirectionsArrow {
+    color: var(--functional-tram);
+    transition: transform 0.2s ease-in-out;
+    transform: rotate(0deg);
+}
+
+.MapRouteSidebarDirectionsArrow_opened {
+    transform: rotate(180deg);
+}
+
+.MapRouteSidebarDirectionsList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.MapRouteSidebarDirectionsItem {
+    cursor: pointer;
+    color: var(--functional);
+    transition: color 150ms ease-out;
+}
+
+.MapRouteSidebarDirectionsItem:hover {
+    color: var(--text-primary);
+}
+
+.MapRouteSidebarStopsWrapper {
+    padding: 0 24px;
+}
+
+.MapRouteSidebarStops {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    position: relative;
+}
+
+.MapRouteSidebarStops::before {
+    content: '';
+    width: 6px;
+    position: absolute;
+    left: 2px;
+    top: 28px;
+    bottom: 28px;
+}
+
+.MapRouteSidebarStops_bus::before {
+    background-color: var(--bus-translucent);
+}
+
+.MapRouteSidebarStops_troll::before {
+    background-color: var(--troll-translucent);
+}
+
+.MapRouteSidebarStops_tram::before {
+    background-color: var(--tram-translucent);
+}
+
+.MapRouteSidebarStop {
+    display: flex;
+    gap: 16px;
+    padding: 16px 0 16px 22px;
+    position: relative;
+    cursor: pointer;
+}
+
+.MapRouteSidebarStop:hover .MapRouteSidebarStopName {
+    color: var(--vehicle-color);
+}
+
+.MapRouteSidebarStartStation {
+    font-weight: 500;
+    color: var(--functional-tram);
+}
+
+.MapRouteSidebarBullet {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    border-radius: 50%;
+    height: 12px;
+    width: 12px;
+    background-color: white;
+    left: -1px;
+    border: 3px solid;
+    transform: translateY(-50%);
+}
+
+.MapRouteSidebarBullet_big {
+    width: 16px;
+    height: 16px;
+    left: -3px;
+    border-width: 4px;
+}
+
+.MapRouteSidebarStopName {
+    flex: 1;
+
+    transition: color 150ms ease-out;
+}
+
+.MapRouteSidebarHiddenStationWrapper {
+    position: relative;
+    color: var(--functional-tram);
+}
+
+.MapRouteSidebarHiddenCountTextWrapper {
+    display: flex;
+    gap: 8px;
+    padding: 16px 0 16px 22px;
+    cursor: pointer;
+}
+
+.MapRouteSidebarHiddenArrow {
+    color: var(--functional-tram);
+    transition: transform 0.2s ease-in-out;
+    transform: rotate(0deg);
+}
+
+.MapRouteSidebarHiddenArrow_opened {
+    transform: rotate(180deg);
+}
+
+/* Пустой, если ID выключены в настройках (DevIds тогда ничего не рисует). */
+.MapRouteSidebarDevIds:not(:empty) {
+    padding: 12px 24px 0;
+}

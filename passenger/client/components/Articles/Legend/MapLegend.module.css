@@ -1,0 +1,139 @@
+/* Легенда встраивается в текст статьи (.ArticleText), поэтому поля списков и заголовков
+   сбрасываем здесь, а не полагаемся на стили статьи. */
+.Legend {
+    display: flex;
+    flex-direction: column;
+    /* Размеры из настроек карты (--icon-scale-*) к легенде не относятся - образцы всегда
+       в исходном размере. */
+    --icon-scale-vehicles-effective: 1;
+    --icon-scale-stops-effective: 1;
+    --icon-scale-rail-effective: 1;
+    --icon-scale-airport-effective: 1;
+    --icon-scale-other-effective: 1;
+}
+
+div.Legend > h3 {
+    margin: 1.6em 0 0.8em;
+}
+
+div.Legend > h3:first-child {
+    margin-top: 0.4em;
+}
+
+.LegendList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* .ArticleText li/ul задают отступы и тире-маркеры с той же специфичностью и подключаются
+   позже - поэтому селекторы утяжелены родителем .Legend. */
+.Legend .LegendList {
+    padding-left: 0;
+}
+
+.Legend .LegendList > li {
+    margin: 0;
+    padding: 0;
+}
+
+.Legend .LegendList > li::before {
+    display: none;
+}
+
+.LegendRow {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+}
+
+.LegendSample {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+}
+
+.LegendText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.LegendText strong {
+    font-weight: 500;
+}
+
+.LegendText > span {
+    color: var(--functional);
+    font-size: 14px;
+}
+
+/* Маркер машины на карте рисуется абсолютными слоями от точки 0,0 - даём ему коробку,
+   в которой капля и бейджи помещаются целиком. */
+.LegendVehicle {
+    position: relative;
+    display: block;
+    width: 120px;
+    height: 48px;
+}
+
+.LegendVehicle > div {
+    position: absolute;
+    top: -2px;
+    left: 4px;
+}
+
+.LegendPin {
+    flex: none;
+}
+
+.LegendSwatch {
+    display: block;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+}
+
+.LegendStar {
+    width: 26px;
+    height: 26px;
+    color: var(--tram);
+}
+
+.LegendStar path {
+    fill: currentColor;
+}
+
+.LegendNoService {
+    width: 26px;
+    height: 26px;
+    color: #d63c3c;
+}
+
+@media screen and (max-width: 480px) {
+    .LegendRow {
+        grid-template-columns: 96px minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .LegendVehicle {
+        width: 96px;
+    }
+}
+
+/* Образец депо - как полигон на карте: лёгкая заливка и обводка цветом вида транспорта. */
+.LegendArea {
+    display: block;
+    width: 34px;
+    height: 24px;
+    border: 2px solid var(--AreaColor);
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--AreaColor) 14%, transparent);
+}

@@ -1,0 +1,23 @@
+/* Круглая кнопка карты 48px в правом верхнем углу (инфо, «Рядом», настройки). */
+.MapButton {
+    border: none;
+    background-color: var(--background-primary);
+    width: 48px;
+    height: 48px;
+    --smooth-corners: 0.8;
+    border-radius: 16px;
+    color: var(--text-primary);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+    flex-shrink: 0;
+
+    transition: 100ms color ease-out;
+}
+
+.MapButton_opened {
+    color: var(--functional-tram);
+}

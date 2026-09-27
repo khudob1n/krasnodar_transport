@@ -1,0 +1,44 @@
+.NoServiceNotice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 12px;
+    border-left: 3px solid #d63c3c;
+    border-radius: 8px;
+    color: #9f2424;
+    background: rgba(214, 60, 60, 0.1);
+}
+
+.NoServiceNoticeIcon {
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    color: #d63c3c;
+}
+
+.NoServiceNoticeIcon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.NoServiceNotice > div {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.NoServiceNotice strong {
+    font-size: 14px;
+    line-height: 18px;
+}
+
+.NoServiceNotice > div > span {
+    font-size: 12px;
+    line-height: 17px;
+}
+
+:global([data-theme='dark']) .NoServiceNotice {
+    color: #ff9b96;
+    background: rgba(255, 92, 85, 0.14);
+}

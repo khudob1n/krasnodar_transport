@@ -1,0 +1,5 @@
+packages:
+  - 'client'
+  - 'common'
+allowBuilds:
+  unrs-resolver: true

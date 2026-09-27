@@ -1,0 +1,433 @@
+/* Навигатор по шагам маршрута («Поехали»). Цвета - из токенов темы (styles/colors.css),
+   тёмная тема работает сама. */
+.Nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 16px 8px;
+}
+
+.NavTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.NavBack {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 4px;
+    border: none;
+    color: var(--text-primary);
+    background: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.NavBack:focus-visible,
+.NavButton:focus-visible,
+.NavDot:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: 2px;
+}
+
+.NavCounter {
+    color: var(--functional);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Точки шагов: кнопки 24px высотой ради попадания пальцем, видимая точка внутри. */
+.NavDots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.NavDot {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.NavDot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--functional-tram);
+    transform: translate(-50%, -50%);
+    transition:
+        width 150ms ease-out,
+        background-color 150ms ease-out;
+}
+
+.NavDot_active::after {
+    width: 18px;
+    border-radius: 4px;
+    background-color: var(--text-primary);
+}
+
+.NavCard {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 14px;
+    background-color: var(--background-secondary);
+    scroll-margin-top: 8px;
+}
+
+.NavStepHead {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.NavStepIcon {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: var(--walk-icon);
+    background-color: var(--background-primary);
+}
+
+.NavStepTitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+}
+
+.NavFacts {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+}
+
+.NavFacts > div {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 8px;
+}
+
+.NavFacts dt {
+    color: var(--functional);
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.NavFacts dd {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.NavNote {
+    color: var(--functional);
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.NavHint {
+    margin: 0;
+    color: var(--functional);
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.NavWarning {
+    color: #c62828;
+}
+
+:global([data-theme='dark']) .NavWarning {
+    color: #ff8a80;
+}
+
+.NavAlternatives {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+}
+
+/* Остановки поездки: линия слева, посадка и выход выделены. */
+.NavStops {
+    margin: 0;
+    padding: 0 0 0 4px;
+    list-style: none;
+}
+
+.NavStop {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 5px 0 5px 20px;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.NavStop::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 4px;
+    width: 2px;
+    background-color: var(--functional-tram);
+}
+
+.NavStop:first-child::before {
+    top: 50%;
+}
+
+.NavStop:last-child::before {
+    bottom: 50%;
+}
+
+.NavStop::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 1px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--background-secondary);
+    box-shadow: inset 0 0 0 2px var(--functional-tram);
+    transform: translateY(-50%);
+}
+
+.NavStop_edge {
+    font-weight: 600;
+}
+
+.NavStop_edge::after {
+    background-color: var(--text-primary);
+    box-shadow: none;
+}
+
+.NavControls {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 8px;
+    /* Кнопки листания всегда под рукой: на телефоне шторка ниже края экрана, а список
+       остановок бывает длинным - прилипают к низу прокручиваемой панели. */
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    margin: 0 -16px -8px;
+    padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+    background-color: var(--background-primary);
+}
+
+.NavButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 48px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 12px;
+    color: var(--text-primary);
+    background-color: var(--background-secondary);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 100ms ease-out;
+}
+
+.NavButton:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.NavButton:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+/* Главное действие - цветом текущего этапа: транспорт или пешеход (--NavAccent). */
+.NavButton_primary {
+    color: #fff;
+    background-color: var(--NavAccent, var(--walk));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .NavDot::after,
+    .NavButton {
+        transition: none;
+    }
+}
+
+/* Финиш - «вы на месте»: по центру флаг, куда приехали, и итог поездки плитками. */
+.NavFinish {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 0 2px;
+    text-align: center;
+}
+
+.NavFinishBadge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 12px;
+    border-radius: 50%;
+    color: #fff;
+    background-color: #d32f2f;
+    /* Мягкий ореол цвета точки B. */
+    box-shadow: 0 0 0 8px color-mix(in srgb, #d32f2f 16%, transparent);
+}
+
+.NavFinishLabel {
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+}
+
+.NavFinishTitle {
+    margin: 2px 0 0;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 26px;
+    overflow-wrap: anywhere;
+}
+
+.NavFinishRides {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 10px;
+    color: var(--functional);
+}
+
+.NavFinishRidesLabel {
+    margin-right: 4px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.NavFinishFacts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 8px;
+    align-self: stretch;
+    margin: 16px 0 0;
+}
+
+.NavFinishFacts > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 8px;
+    border-radius: 12px;
+    background-color: var(--background-primary);
+}
+
+.NavFinishFacts dt {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.NavFinishFacts dd {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 21px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* Конфетти: бумажки стартуют из центра флага; разлёт - anime.js в FinishStep. */
+.NavConfetti {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    pointer-events: none;
+}
+
+.NavConfetti i {
+    position: absolute;
+    width: 6px;
+    height: 10px;
+    margin: -5px 0 0 -3px;
+    border-radius: 1.5px;
+    /* Видны только в анимации (эффект в FinishStep). */
+    opacity: 0;
+}
+
+.NavConfetti i:nth-child(3n) {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .NavConfetti {
+        display: none;
+    }
+}
+
+/* Телефон: на полуоткрытой шторке должно быть видно сам шаг, а не служебное. Точки не нужны
+   (номер шага - в строке «Шаг 1 из 3»), подписи - мелко над значением, а не колонкой слева
+   (там они переносились), из остановок - только посадка и выход. */
+@media screen and (max-width: 768px) {
+    .NavDots {
+        display: none;
+    }
+
+    /* Без заголовка «В пути» эта строка - первая в шторке, справа от неё крестик закрытия. */
+    .NavTop {
+        padding-right: 36px;
+    }
+
+    .NavCard {
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .NavFacts > div {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    .NavFacts dt {
+        font-size: 12px;
+        line-height: 16px;
+    }
+
+    .NavStop:not(.NavStop_edge) {
+        display: none;
+    }
+}

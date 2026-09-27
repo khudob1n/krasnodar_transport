@@ -1,0 +1,30 @@
+.FavoriteButton {
+    composes: PillButton from '../PillButton/PillButton.module.css';
+}
+
+/* Сохранённое состояние: звезда залита цветом акцента, фон кнопки подкрашен им же. Подпись
+   остаётся основного цвета - оранжевый текст на светлом фоне не набирает контраста. */
+.FavoriteButton_active {
+    background-color: color-mix(in srgb, var(--tram) 14%, var(--background-primary));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tram) 45%, transparent);
+}
+
+@media (hover) {
+    .FavoriteButton_active:hover {
+        background-color: color-mix(in srgb, var(--tram) 22%, var(--background-primary));
+    }
+}
+
+.FavoriteButtonIcon {
+    composes: PillButtonIcon from '../PillButton/PillButton.module.css';
+}
+
+.FavoriteButton_active .FavoriteButtonIcon {
+    color: var(--tram);
+}
+
+/* star.svg нарисован обводкой с fill="none", а presentation-атрибут проигрывает CSS-правилу,
+   так что заливку сохранённого состояния включаем отсюда. */
+.FavoriteButton_active .FavoriteButtonIcon path {
+    fill: currentColor;
+}

@@ -1,0 +1,36 @@
+/* Цвета - те же переменные вида транспорта, что у машин и остановок. Заливка лёгкая, чтобы
+   под полигоном читались подложка и значки остановок. */
+.MapDepot {
+    stroke-width: 2;
+    stroke-opacity: 0.9;
+    fill-opacity: 0.14;
+}
+
+.MapDepot_tram {
+    stroke: var(--tram);
+    fill: var(--tram);
+}
+
+.MapDepot_troll {
+    stroke: var(--troll);
+    fill: var(--troll);
+}
+
+.MapDepot_bus {
+    stroke: var(--bus);
+    fill: var(--bus);
+}
+
+/* Подпись по центру территории. Наследует стиль подписей остановок (обводка цветом фона
+   вместо плашки), но по центру и с переносом длинных названий.
+   Клики сквозь неё - полигон тоже не интерактивный. */
+:global(.leaflet-tooltip).MapDepotLabel {
+    /* Сдвиг подписи под размер значка (см. MapStopsItemLabel) депо не нужен - у полигона нет
+       значка. Масштаб 1 даёт нулевой сдвиг независимо от порядка подключения модулей. */
+    --MapLabelScale: 1;
+    margin-left: 0;
+    max-width: 180px;
+    white-space: normal;
+    text-align: center;
+    pointer-events: none;
+}

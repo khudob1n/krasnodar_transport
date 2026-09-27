@@ -1,0 +1,99 @@
+/* Геометрия повторяет ../Item/MapStopsSidebarStopsListItem.module.css, чтобы при появлении
+   данных содержимое не прыгало: тот же gap между строкой и временем, тот же отступ внутри. */
+.MapStopsSidebarStopsListSkeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+}
+
+@media screen and (min-width: 769px) {
+    .MapStopsSidebarStopsListSkeleton {
+        gap: 30px;
+    }
+}
+
+.MapStopsSidebarStopsListSkeletonRow {
+    display: flex;
+    gap: 32px;
+}
+
+.MapStopsSidebarStopsListSkeletonInfo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    /* Без min-width: 0 процентные ширины полос считаются от max-content дочернего блока. */
+    min-width: 0;
+}
+
+.MapStopsSidebarStopsListSkeletonText {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Одна "кость" - серый прямоугольник на --background-secondary, который сам по себе разный в
+   светлой и тёмной теме, поэтому подбирать отдельные цвета не нужно. Пульсация вместо бегущего
+   блика: не требует градиента, который пришлось бы задавать для каждой темы отдельно. */
+.MapStopsSidebarStopsListSkeletonBone {
+    background: var(--background-secondary);
+    border-radius: 6px;
+    animation: MapStopsSidebarStopsListSkeletonPulse 1.3s ease-in-out infinite;
+}
+
+@keyframes MapStopsSidebarStopsListSkeletonPulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .MapStopsSidebarStopsListSkeletonBone {
+        animation: none;
+    }
+}
+
+/* Бейдж маршрута - те же 57x32 и радиус 12, что у MapVehiclesRoute размера m. */
+.MapStopsSidebarStopsListSkeletonRoute {
+    width: 57px;
+    height: 32px;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.MapStopsSidebarStopsListSkeletonEndpoint {
+    height: 16px;
+}
+
+.MapStopsSidebarStopsListSkeletonKeypoints {
+    width: 38%;
+    height: 12px;
+}
+
+.MapStopsSidebarStopsListSkeletonTime {
+    width: 44px;
+    height: 14px;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+@media screen and (min-width: 769px) {
+    .MapStopsSidebarStopsListSkeletonEndpoint {
+        height: 20px;
+    }
+
+    .MapStopsSidebarStopsListSkeletonKeypoints {
+        height: 14px;
+    }
+
+    .MapStopsSidebarStopsListSkeletonTime {
+        width: 52px;
+        height: 16px;
+    }
+}

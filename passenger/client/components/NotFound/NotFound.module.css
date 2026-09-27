@@ -1,0 +1,204 @@
+.NotFound {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    /* Ровно видимая высота: на телефоне 100vh выше экрана (в нём место под адресную строку),
+       и страница прокручивалась. dvh - фактическая высота; vh - запасной для старых браузеров. */
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 24px 16px;
+    overflow: hidden;
+    color: var(--text-primary);
+    background: var(--background-primary);
+    font-family: 'Onest', sans-serif;
+    text-align: center;
+}
+
+/* Сценка: плашка «404» над дорогой, на дороге остановка и автобус. */
+.Scene {
+    position: relative;
+    width: min(440px, 100%);
+    height: 236px;
+    margin-bottom: 28px;
+    overflow: hidden;
+}
+
+.Chip {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    translate: -50% 0;
+}
+
+/* Плашка крупнее, чем на карте, - это главный герой страницы. */
+.Chip > div {
+    min-width: 204px;
+    height: 116px;
+    padding: 0 20px;
+    border-radius: 32px;
+    font-size: 84px;
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--bus) 35%, transparent);
+}
+
+.Road {
+    position: absolute;
+    right: 0;
+    bottom: 22px;
+    left: 0;
+    height: 4px;
+    border-radius: 2px;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--functional-tram) 0 18px,
+        transparent 18px 30px
+    );
+    opacity: 0.6;
+}
+
+.Stop {
+    position: absolute;
+    bottom: 34px;
+    left: 80%;
+}
+
+/* Автобус - маркер как на карте: капля (40px) и табличка с номером слева от неё. Стоит
+   каплей перед остановкой; анимация сдвигает его от этого места. */
+.Bus {
+    position: absolute;
+    bottom: 30px;
+    left: calc(80% - 48px);
+    width: 40px;
+    height: 44px;
+    transform-origin: 20px 100%;
+}
+
+.BusMarker > div {
+    position: absolute;
+    top: -2px;
+    left: 0;
+}
+
+.Question {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    /* Над каплей. */
+    left: 20px;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    margin-left: -12px;
+    border-radius: 50%;
+    color: var(--background-primary);
+    background: var(--text-primary);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+    opacity: 0;
+}
+
+.Title {
+    margin: 0;
+    font-size: clamp(28px, 6vw, 40px);
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.Text {
+    max-width: 440px;
+    margin: 12px 0 0;
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.Actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    width: min(440px, 100%);
+    margin-top: 28px;
+}
+
+.Button,
+.Button:visited {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 0 16px;
+    border-radius: 14px;
+    color: var(--text-primary);
+    background: var(--background-secondary);
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.Button:hover {
+    background: color-mix(in srgb, var(--functional-tram) 25%, var(--background-secondary));
+}
+
+.Button_primary,
+.Button_primary:visited {
+    color: #fff;
+    background: var(--bus);
+}
+
+.Button_primary:hover {
+    background: color-mix(in srgb, var(--bus) 88%, black);
+}
+
+.Button:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: 2px;
+}
+
+@media screen and (max-width: 380px) {
+    .Actions {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Невысокий экран (телефон с адресной строкой, альбомная ориентация) - сценку и отступы
+   ужимаем, чтобы всё помещалось без прокрутки. */
+@media screen and (max-height: 760px) {
+    .Scene {
+        height: 190px;
+        margin-bottom: 16px;
+    }
+
+    .Chip > div {
+        min-width: 160px;
+        height: 88px;
+        border-radius: 26px;
+        font-size: 64px;
+    }
+
+    .Text {
+        margin-top: 8px;
+        font-size: 15px;
+        line-height: 22px;
+    }
+
+    .Actions {
+        margin-top: 20px;
+    }
+}
+
+@media screen and (max-height: 600px) {
+    .Scene {
+        height: 150px;
+    }
+
+    .Chip > div {
+        min-width: 128px;
+        height: 64px;
+        border-radius: 20px;
+        font-size: 46px;
+    }
+}

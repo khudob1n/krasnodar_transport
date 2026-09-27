@@ -1,0 +1,32 @@
+.JourneyMetroChip {
+    display: inline-flex;
+    flex: none;
+}
+
+.JourneyMetroChip img {
+    display: block;
+    flex: none;
+}
+
+/* Высота - как у плашек наземных маршрутов того же размера (MapVehiclesRoute). */
+.JourneyMetroChip_xs img {
+    width: 22px;
+    height: 22px;
+}
+
+.JourneyMetroChip_s img {
+    width: 30px;
+    height: 30px;
+}
+
+.JourneyMetroChip .JourneyMetroChipDark {
+    display: none;
+}
+
+:global([data-theme='dark']) .JourneyMetroChip .JourneyMetroChipLight {
+    display: none;
+}
+
+:global([data-theme='dark']) .JourneyMetroChip .JourneyMetroChipDark {
+    display: block;
+}

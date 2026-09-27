@@ -1,0 +1,76 @@
+/* Табло как в салоне транспорта: тёмный корпус и зелёные пиксельные буквы. Корпус
+   остаётся тёмным и в светлой теме - это «прибор» на странице, а не её поверхность. */
+.Marquee {
+    overflow: hidden;
+    padding: 26px 0;
+    border-radius: 24px;
+    background: #0b0b0a;
+    color: var(--bus);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    line-height: 1.7;
+    text-transform: uppercase;
+}
+.MarqueeTrack {
+    display: flex;
+    width: max-content;
+    animation: MarqueeScroll var(--MarqueeDuration, 32s) linear infinite;
+}
+.MarqueeGroup {
+    display: flex;
+    flex: 0 0 auto;
+}
+.MarqueeItem {
+    white-space: nowrap;
+    /* свечение ламп табло */
+    text-shadow: 0 0 10px color-mix(in srgb, var(--bus) 55%, transparent);
+}
+.MarqueeItem::after {
+    content: '•';
+    margin: 0 32px;
+    opacity: 0.5;
+}
+@keyframes MarqueeScroll {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+@media (hover: hover) {
+    .Marquee:hover .MarqueeTrack {
+        animation-play-state: paused;
+    }
+}
+@media (max-width: 599px) {
+    .Marquee {
+        padding: 20px 0;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+}
+/* Без движения лента не доедет до скрытой части, поэтому показываем весь текст
+   переносом: одна группа, без дубля и без разделителей. */
+@media (prefers-reduced-motion: reduce) {
+    .Marquee {
+        padding: 18px 20px;
+    }
+    .MarqueeTrack {
+        width: auto;
+        animation: none;
+    }
+    .MarqueeGroup {
+        flex-wrap: wrap;
+        gap: 12px 28px;
+    }
+    .MarqueeGroup + .MarqueeGroup {
+        display: none;
+    }
+    .MarqueeItem {
+        white-space: normal;
+    }
+    .MarqueeItem::after {
+        display: none;
+    }
+}

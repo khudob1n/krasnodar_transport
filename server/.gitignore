@@ -1,0 +1,4 @@
+node_modules/
+var/vehicle_history/*.ndjson
+var/vehicle_history/*.ndjson.gz
+.env

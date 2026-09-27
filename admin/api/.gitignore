@@ -1,0 +1,4 @@
+node_modules/
+.env
+# Prisma resolves the sqlite file: URL relative to prisma/schema.prisma, not the repo root.
+prisma/var/

@@ -1,0 +1,15 @@
+[Unit]
+Description=KRD transport: API админки и публичные данные для карты
+After=network-online.target krd-proxy.service
+Wants=network-online.target
+
+[Service]
+User=krd
+WorkingDirectory=/opt/krd/admin/api
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node --env-file=.env src/index.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

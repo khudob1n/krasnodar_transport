@@ -1,0 +1,591 @@
+.MapJourney {
+    padding-bottom: 8px;
+    border-radius: 16px;
+    color: var(--text-primary);
+    background-color: var(--background-primary);
+}
+
+.MapJourneyHeader {
+    /* Справа место под крестик закрытия Sidepage. */
+    padding: 18px 80px 12px 22px;
+}
+
+.MapJourneyHeader h4 {
+    font-weight: 700;
+}
+
+.MapJourneyHeader .JourneyNote {
+    margin-top: 4px;
+}
+
+.JourneyNote {
+    margin: 0;
+    color: var(--functional);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+}
+
+.JourneyPadded {
+    padding: 12px 22px;
+}
+
+/* Поля «Откуда» / «Куда» и кнопка «поменять местами» справа от них. */
+.JourneyFields {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px 8px 16px;
+}
+
+.JourneyFieldsColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.JourneyField {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 52px;
+    padding: 4px 4px 4px 10px;
+    border-radius: 12px;
+    background-color: var(--background-secondary);
+}
+
+.JourneyField_editing {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--functional-tram) 60%, transparent);
+}
+
+.JourneyField_editing:focus-within {
+    box-shadow: inset 0 0 0 2px var(--functional);
+}
+
+.JourneyFieldMarker {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    color: #fff;
+    background-color: var(--functional);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Цвета точек A и B - те же, что у меток на карте (MapJourneyLayer). */
+.JourneyFieldMarker_A {
+    background-color: #2e7d32;
+}
+
+.JourneyFieldMarker_B {
+    background-color: #d32f2f;
+}
+
+.JourneyFieldValue {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    padding: 4px 0;
+    border: none;
+    color: inherit;
+    background: none;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.JourneyFieldValue:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+.JourneyFieldTitle {
+    overflow: hidden;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.JourneyFieldInput {
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+    padding: 0;
+    border: none;
+    outline: none;
+    color: inherit;
+    background: none;
+    font-family: inherit;
+    font-size: 16px;
+}
+
+.JourneyFieldInput::placeholder {
+    color: var(--functional);
+}
+
+/* Пока в поле «печатаются» примеры - они бледнее обычной подсказки. */
+.JourneyFieldInput_typing::placeholder {
+    opacity: 0.6;
+}
+
+.JourneyField_editing {
+    flex-wrap: wrap;
+}
+
+/* Результаты - в потоке, под полем: панель прокручивается и обрезала бы выпадающий список. */
+.JourneyFieldResults {
+    flex-basis: 100%;
+    max-height: 320px;
+    margin: 4px 0 4px -6px;
+    padding: 4px 0;
+    overflow-y: auto;
+    list-style: none;
+    border-top: 1px solid color-mix(in srgb, var(--functional-tram) 40%, transparent);
+}
+
+.JourneyFieldResult {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    color: inherit;
+    background: none;
+    font-family: inherit;
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+}
+
+@media (hover) {
+    .JourneyFieldResult:hover {
+        background-color: var(--background-secondary);
+    }
+}
+
+.JourneyFieldResult:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: -2px;
+}
+
+.JourneyFieldResultText {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.JourneyStopIcon {
+    flex: none;
+    width: 24px;
+    height: 24px;
+}
+
+/* Адрес в результатах - значок булавки вместо значка остановки. */
+.JourneyPlaceIcon {
+    color: var(--functional);
+}
+
+/* «Моё местоположение» и «Указать на карте» под пустым полем. */
+/* «Моё местоположение» и «Указать на карте» под пустым полем - кнопки-плашки одна под
+   другой, чтобы было видно, что их можно нажать. */
+.JourneyQuick {
+    display: grid;
+    flex-basis: 100%;
+    gap: 6px;
+    padding: 6px 0 4px;
+}
+
+.JourneyQuick .JourneyNote {
+    grid-column: 1 / -1;
+}
+
+.JourneyQuickButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 38px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 10px;
+    color: var(--text-primary);
+    background-color: var(--background-primary);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--functional-tram) 45%, transparent);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.JourneyQuickButton > svg {
+    flex: none;
+}
+
+.JourneyQuickButton > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (hover: hover) {
+    .JourneyQuickButton:hover:not(:disabled) {
+        background-color: color-mix(in srgb, var(--functional-tram) 18%, var(--background-primary));
+    }
+}
+
+.JourneyQuickButton:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.JourneyQuickButton:disabled {
+    color: var(--functional);
+    cursor: default;
+}
+
+.JourneyQuickButton:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: 2px;
+}
+
+/* Идёт выбор точки на карте - кнопка подсвечена, её нажатие отменяет выбор. */
+.JourneyQuickButton_active {
+    background-color: color-mix(in srgb, var(--functional-tram) 18%, var(--background-primary));
+    box-shadow: inset 0 0 0 1.5px var(--functional);
+}
+
+/* Состояние поиска адресов под результатами: «Ищем…», «не найден», «недоступен». */
+.JourneyPlaceStatus {
+    display: flex;
+    flex-basis: 100%;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 6px 4px 8px 30px;
+    color: var(--functional);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.JourneySpinner {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid color-mix(in srgb, var(--functional) 30%, transparent);
+    border-top-color: var(--functional);
+    border-radius: 50%;
+    animation: journey-spin 0.8s linear infinite;
+}
+
+@keyframes journey-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .JourneySpinner {
+        animation-duration: 2.4s;
+    }
+}
+
+.JourneyIconButton {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 10px;
+    color: var(--functional);
+    background: none;
+    cursor: pointer;
+}
+
+@media (hover) {
+    .JourneyIconButton:hover:not(:disabled) {
+        color: var(--text-primary);
+        background-color: var(--background-secondary);
+    }
+}
+
+.JourneyIconButton:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: -2px;
+}
+
+.JourneyIconButton:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.JourneySwap {
+    width: 40px;
+    height: 40px;
+}
+
+/* Варианты */
+.JourneyOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 10px 12px 4px;
+    list-style: none;
+}
+
+/* Рамка - отдельным слоем поверх содержимого: тенью у самого пункта её закрывал фон кнопки
+   при наведении, и у выбранного варианта рамка пропадала сверху и по бокам. */
+.JourneyOption {
+    position: relative;
+    border-radius: 12px;
+}
+
+.JourneyOption::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--functional-tram) 40%, transparent);
+    pointer-events: none;
+}
+
+.JourneyOption_selected::after {
+    box-shadow: inset 0 0 0 2px var(--functional);
+}
+
+/* У раскрытого варианта под кнопкой - шаги: подсветка при наведении скруглена только сверху,
+   иначе она выглядела отдельной плашкой, оторванной от шагов. */
+.JourneyOption_selected .JourneyOptionButton {
+    border-radius: 12px 12px 0 0;
+}
+
+.JourneyOptionButton {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 12px;
+    color: inherit;
+    background: none;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+@media (hover) {
+    .JourneyOptionButton:hover {
+        background-color: var(--background-secondary);
+    }
+}
+
+.JourneyOptionButton:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: -2px;
+}
+
+.JourneyOptionTop {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.JourneyOptionDuration {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 24px;
+}
+
+.JourneyOptionClock {
+    color: var(--functional);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.JourneyChips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+
+.JourneyChevron {
+    color: var(--functional);
+}
+
+.JourneyRideChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.JourneyWalkChip {
+    display: inline-flex;
+    color: var(--walk-icon);
+}
+
+.JourneyWarning {
+    color: #c62828;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+:global([data-theme='dark']) .JourneyWarning {
+    color: #ff8a80;
+}
+
+/* Шаги выбранного варианта: вертикальная линия слева связывает их в одну поездку. */
+.JourneySteps {
+    position: relative;
+    margin: 0;
+    padding: 4px 14px 14px;
+    list-style: none;
+}
+
+.JourneyStep {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    font-size: 15px;
+    line-height: 20px;
+}
+
+/* Колонка иконки шага. Сверху и снизу от иконки - отрезки линии: у соседних шагов они
+   стыкуются, и шаги связаны одной сплошной линией от первого до «B», а иконки остаются
+   на чистом фоне. */
+.JourneyStepRail {
+    flex: none;
+    width: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 8px;
+}
+
+.JourneyStepRail::before,
+.JourneyStepRail::after {
+    content: '';
+    width: 2px;
+    background-color: color-mix(in srgb, var(--functional-tram) 60%, transparent);
+}
+
+.JourneyStep + .JourneyStep .JourneyStepRail {
+    padding-top: 0;
+}
+
+.JourneyStep + .JourneyStep .JourneyStepRail::before {
+    height: 4px;
+    margin-bottom: 4px;
+}
+
+.JourneyStep:not(:last-child) .JourneyStepRail::after {
+    flex: 1;
+    min-height: 4px;
+    margin-top: 4px;
+}
+
+.JourneyStepIcon {
+    color: var(--walk-icon);
+}
+
+.JourneyStep_finish .JourneyFieldMarker {
+    min-width: 22px;
+    margin: 0 6px;
+}
+
+.JourneyStepBody {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding: 8px 0;
+}
+
+.JourneyStepStops {
+    font-weight: 500;
+}
+
+.JourneyAlternatives {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.JourneyFooter {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 22px 6px;
+}
+
+/* «Поехали» под шагами выбранного варианта - главное действие, инверсия текста и фона. */
+.JourneyGoRow {
+    padding: 0 14px 14px;
+}
+
+.JourneyGo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 48px;
+    border: none;
+    border-radius: 12px;
+    /* Фон - цвет основного транспорта варианта (journeyAccentColor), задаётся инлайном. */
+    color: #fff;
+    background-color: var(--walk);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 100ms ease-out;
+}
+
+.JourneyGo:active {
+    transform: scale(0.98);
+}
+
+.JourneyGo:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .JourneyGo {
+        transition: none;
+    }
+}
+
+/* В навигаторе на телефоне заголовок «В пути» и «откуда → куда» не нужны: навигатор и так
+   говорит, какой шаг, - место на полуоткрытой шторке отдаём самому шагу. */
+@media screen and (max-width: 768px) {
+    .MapJourneyHeader_nav {
+        display: none;
+    }
+}

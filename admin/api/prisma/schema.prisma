@@ -1,0 +1,67 @@
+// SQLite for now - see admin/api/README.md for the plan to move to Postgres later
+// (swap `provider`/`url` below, everything else in this schema stays the same).
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  VIEWER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(VIEWER)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+// Riders (the public passenger app) are a separate account system from the admin panel's
+// User model on purpose - self-registration is fine here, and it must never share a login
+// with backoffice ADMIN/VIEWER access.
+model AppUser {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  createdAt    DateTime   @default(now())
+  favorites    Favorite[]
+}
+
+// A rider's saved route or stop. `kind` + `refId` point at a DataRecord (refId is that
+// collection's recordKey, e.g. a route id or a stop id) - kept as a loose reference rather
+// than a foreign key since DataRecord rows are looked up generically by collection.
+model Favorite {
+  id        String   @id @default(cuid())
+  appUserId String
+  appUser   AppUser  @relation(fields: [appUserId], references: [id])
+  kind      String // "route" | "stop"
+  refId     String
+  createdAt DateTime @default(now())
+
+  @@unique([appUserId, kind, refId])
+  @@index([appUserId])
+}
+
+// Generic store for the reference datasets under /data (routes, stops, stations, ...).
+// Each dataset's rows are seeded in here so admin edits never touch the original
+// data/**/*.json files. `collection` is the dataset key (e.g. "ground_transport/stops"),
+// `recordKey` identifies a row within that dataset (natural id, composite key, or index -
+// see prisma/seed.mjs for how each dataset picks one).
+model DataRecord {
+  id              String   @id @default(cuid())
+  collection      String
+  recordKey       String
+  payload         String // JSON-encoded record
+  updatedAt       DateTime @updatedAt
+  updatedByEmail  String?
+
+  @@unique([collection, recordKey])
+  @@index([collection])
+}

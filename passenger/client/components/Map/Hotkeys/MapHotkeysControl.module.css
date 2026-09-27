@@ -1,0 +1,72 @@
+/* Leaflet даёт контролам свою рамку и фон - кнопка карты рисует их сама. */
+.HotkeysLeafletControl {
+    /* Выше «Маршрута» (order: 0), масштаба и «Где я». */
+    order: -1;
+    border: none !important;
+    background: none !important;
+}
+
+.HotkeysControl {
+    position: relative;
+}
+
+/* Подсказка открывается слева от кнопки и вверх: колонка стоит у нижнего края карты. */
+.HotkeysPopover {
+    position: absolute;
+    right: calc(100% + 10px);
+    bottom: 0;
+    width: 290px;
+    /* Не выше верхнего ряда кнопок карты: колонка у нижнего края, над ней ~200px. */
+    max-height: calc(100vh - 230px);
+    overflow-y: auto;
+    padding: 10px 14px 12px;
+    border-radius: 16px;
+    color: var(--text-primary);
+    background: var(--background-primary);
+    box-shadow: 0 6px 24px rgb(0 0 0 / 22%);
+}
+
+.HotkeysPopover ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.HotkeysPopover li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 5px 0;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.HotkeysPopover p {
+    margin: 8px 0 0;
+    padding-top: 8px;
+    border-top: 1px solid var(--background-secondary);
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.HotkeysKeys {
+    display: flex;
+    flex: none;
+    gap: 3px;
+}
+
+.HotkeysKeys kbd {
+    min-width: 22px;
+    padding: 1px 6px;
+    border-radius: 5px;
+    color: var(--text-primary);
+    background: var(--background-secondary);
+    box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--functional-tram) 45%, transparent);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 17px;
+    text-align: center;
+}

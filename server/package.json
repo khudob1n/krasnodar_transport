@@ -1,0 +1,16 @@
+{
+  "name": "krd-transport-proxy",
+  "version": "0.1.0",
+  "description": "Proxy server for Krasnodar transport: polls real-time vehicle positions and re-broadcasts them over WebSocket.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "NODE_EXTRA_CA_CERTS=./certs/globalsign-gcc-r46-dv-tls-ca-2025.pem node --env-file=.env src/index.js",
+    "dev": "NODE_EXTRA_CA_CERTS=./certs/globalsign-gcc-r46-dv-tls-ca-2025.pem node --env-file=.env --watch src/index.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

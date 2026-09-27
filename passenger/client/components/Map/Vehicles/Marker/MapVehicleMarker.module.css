@@ -1,0 +1,117 @@
+.MapVehicleMarker {
+    animation: 150ms ease-out enlarge;
+    transform-origin: 20px 28px;
+}
+
+/* Размер из настроек; origin в центре капли держит её на месте машины. */
+.MapVehicleMarkerScale {
+    transform-origin: 20px 28px;
+    scale: var(--icon-scale-vehicles-effective);
+}
+
+@keyframes enlarge {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+.MapVehicleMarkerArrow {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    transition: transform 1s linear;
+}
+
+.MapVehicleMarkerIcon {
+    position: absolute;
+    top: 15px;
+    left: 7px;
+    width: 24px;
+    height: 27px;
+}
+
+/* Капля вращается вокруг 20px 28px, её остриё уходит от центра на ~27.5px - значит бейджи
+   должны начинаться дальше этой отметки, иначе при некоторых курсах остриё и кольцо бейджа
+   (одного цвета) сливаются в одну фигуру. */
+.MapVehicleMarkerInfo {
+    position: absolute;
+    left: 52px;
+    top: 14px;
+    width: max-content;
+
+    display: flex;
+    gap: 9px;
+}
+
+/* Зеркальный вариант привязан правым краем, чтобы зазор до капли не зависел от числа бейджей. */
+.MapVehicleMarkerInfo_course_east {
+    left: -10px;
+    transform: translateX(-100%);
+    flex-direction: row-reverse;
+}
+
+.MapVehicleMarkerInfoItem {
+    display: block;
+    background-color: #fff;
+    border-radius: 8px;
+    min-width: 24px;
+    height: 24px;
+    box-shadow: 0 0 0 2.5px currentColor;
+}
+
+:global([data-theme='dark']) .MapVehicleMarkerInfoItem {
+    background-color: var(--background-primary);
+}
+
+.MapVehicleMarkerRoute {
+    min-width: 42px;
+
+    text-align: center;
+    box-sizing: border-box;
+
+    /* Номера маршрутов - отдельно на Onest, а не на общем моноширинном шрифте карты (см.
+       .leaflet-container в styles/globals.css). */
+    font-family: 'Onest', sans-serif;
+    font-size: 21px;
+    font-weight: 500;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 4px;
+}
+
+.MapVehicleMarkerAccessibilityIcon {
+    display: block;
+    margin: 3px auto;
+}
+
+.MapVehicleMarkerWarningIcon {
+    display: block;
+    margin: 3px auto;
+    /* «Не по маршруту» - Tabler alert-triangle (треугольник с восклицательным знаком) цвета предупреждения. */
+    color: #E09B00;
+}
+
+.MapVehicleMarkerAccessibilityWarning {
+    height: 24px;
+    display: flex;
+    gap: 9px;
+}
+
+/* Устаревшие координаты (TASK-214): капля и плашки заштрихованы косыми полосами цвета вида
+   транспорта. Непрозрачно - наложенные друг на друга машины (в депо их десятки) не
+   просвечивают. Узор капли - StaleHatchPattern в MapVehicleMarker.tsx. */
+.MapVehicleMarker_stale .MapVehicleMarkerArrow path {
+    fill: var(--vehicle-stale-hatch);
+}
+
+.MapVehicleMarker_stale .MapVehicleMarkerInfoItem {
+    background-image: repeating-linear-gradient(
+        -45deg,
+        color-mix(in srgb, currentColor 35%, transparent) 0 2.5px,
+        transparent 2.5px 5.5px
+    );
+}

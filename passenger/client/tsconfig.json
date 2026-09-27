@@ -1,0 +1,8 @@
+{
+  "extends": "transport-common/tsconfig/client.tsconfig.json",
+  "compilerOptions": {    
+    "baseUrl": ".",
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}

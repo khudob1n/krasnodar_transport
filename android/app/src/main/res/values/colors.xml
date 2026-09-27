@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- background-primary тёмной темы сайта (styles/colors.css). -->
+    <color name="background_dark">#16181C</color>
+    <!-- Цвет логотипа (logo-circle светлой темы сайта, styles/colors.css). -->
+    <color name="logo_red">#B10000</color>
+</resources>

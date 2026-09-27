@@ -1,0 +1,6 @@
+[
+  {"id": 1, "type": "public", "title": "Транспорт на карте", "url": "/map", "size": "large", "dynamicId": "map", "footerCaption": "Где сейчас едут автобусы, троллейбусы и трамваи — в реальном времени"},
+  {"id": 2, "type": "other", "title": "О проекте", "url": "/o-proekte", "footerCaption": "Что это за сервис"},
+  {"id": 3, "type": "other", "title": "Как пользоваться картой", "url": "/kak-chitat-kartu", "footerCaption": "Как понять, что где на карте"},
+  {"id": 4, "type": "other", "title": "Откуда данные", "url": "/istochniki-dannyh", "footerCaption": "Источники и точность"}
+]

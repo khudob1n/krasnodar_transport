@@ -1,0 +1,73 @@
+.MapSearchBarStopResult__wrapper {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+
+    background-color: var(--background-primary);
+
+    font-family: inherit;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.05;
+
+    padding: 8px;
+    gap: 10px;
+
+    transition: background-color 150ms ease-out;
+
+    & span {
+        font-size: 28px;
+        line-height: 1.16;
+    }
+
+    &:hover {
+        background-color: var(--background-secondary);
+    }
+}
+
+.MapSearchBarStopResult__wrapper > svg {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    object-fit: contain;
+}
+
+.MapSearchBarStopResult__wrapper_selected {
+    background-color: var(--background-secondary);
+}
+
+.MapSearchBarStopResult__body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+/* Подпись направления - чтобы различать одноимённые остановки по разные стороны улицы. */
+.MapSearchBarStopResult__direction {
+    color: var(--functional);
+    font-size: 13px;
+    line-height: 16px;
+    text-align: left;
+}
+
+.MapSearchBarStopResult__direction i {
+    font-style: normal;
+}
+
+.MapSearchBarStopResult__visuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.MapSearchBarStopResult__text {
+    margin: 0;
+    text-align: left;
+    color: var(--text-primary);
+}

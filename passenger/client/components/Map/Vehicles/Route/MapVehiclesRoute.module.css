@@ -1,0 +1,44 @@
+.MapVehiclesRoute {
+    /* Номера маршрутов - отдельно на Onest, а не на общем моноширинном шрифте карты (см.
+       .leaflet-container в styles/globals.css). */
+    font-family: 'Onest', sans-serif;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: normal;
+    --smooth-corners: 0.8;
+    border-radius: 12px;
+    color: white;
+    padding: 0 5px;
+}
+
+/* Для компактных списков - панель избранных остановок на карте. */
+.MapVehiclesRouteSize_xs {
+    min-width: 32px;
+    height: 22px;
+    border-radius: 7px;
+
+    font-size: 15px;
+}
+
+.MapVehiclesRouteSize_s {
+    min-width: 50px;
+    height: 30px;
+
+    font-size: 24px;
+}
+
+.MapVehiclesRouteSize_m {
+    min-width: 57px;
+    height: 32px;
+
+    font-size: 28px;
+}
+
+.MapVehiclesRouteSize_l {
+    min-width: 65px;
+    height: 42px;
+
+    font-size: 32px;
+}

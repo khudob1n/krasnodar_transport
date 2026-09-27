@@ -1,0 +1,60 @@
+.RailSidebar {
+    min-height: 100%;
+    color: var(--text-primary);
+    background: var(--background-primary);
+}
+
+.RailSidebarHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 22px 70px 20px 22px;
+    border-bottom: 1px solid var(--background-secondary);
+}
+
+/* Значок станции - на плашке, слегка подкрашенной её цветом. */
+.RailSidebarIcon {
+    display: grid;
+    flex: 0 0 48px;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--StationColor) 14%, transparent);
+}
+
+.RailSidebarIcon svg {
+    width: 30px;
+    height: 30px;
+}
+
+.RailSidebarHeader > div {
+    min-width: 0;
+}
+
+.RailSidebarHeader span {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 16px;
+}
+
+.RailSidebarHeader h4 {
+    overflow-wrap: break-word;
+    font-weight: 700;
+}
+
+.RailSidebarContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 22px 28px;
+}
+
+.RailSidebarContent p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 21px;
+}

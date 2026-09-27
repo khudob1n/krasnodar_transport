@@ -1,0 +1,95 @@
+.MapStopsSidebarStopsList {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    padding-top: 18px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+@media screen and (min-width: 769px) {
+    .MapStopsSidebarStopsList {
+        gap: 30px;
+        padding-bottom: 18px;
+    }
+}
+
+.MapStopsSidebarStopsList::-webkit-scrollbar {
+    display: none;
+}
+
+/* Нет расписания: плашка и под ней отдельным блоком - что здесь ходит, номер и куда. */
+.MapStopsSidebarNoSchedule {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.MapStopsSidebarRoutesSection {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.MapStopsSidebarRoutesTitle {
+    margin: 4px 0 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+}
+
+.MapStopsSidebarRoutesHere {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.MapStopsSidebarRoutesHere li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    font-size: 15px;
+    line-height: 20px;
+}
+
+.MapStopsSidebarRoutesHere li > span {
+    /* Направление - полужирным, без стрелки: номер слева и так говорит, что это «куда». */
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Основа - PillButton; здесь только открытое состояние и стрелка. */
+.MapStopsSidebarSchedule {
+    padding-right: 8px;
+}
+
+.MapStopsSidebarSchedule_opened {
+    background-color: color-mix(in srgb, var(--functional-tram) 28%, var(--background-secondary));
+}
+
+.MapStopsSidebarScheduleArrow {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: var(--functional);
+    transition: transform 0.2s ease-in-out;
+    transform: rotate(0deg);
+}
+
+.MapStopsSidebarScheduleArrow_opened {
+    transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .MapStopsSidebarScheduleArrow {
+        transition: none;
+    }
+}
+

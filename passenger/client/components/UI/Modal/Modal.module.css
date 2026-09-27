@@ -1,0 +1,212 @@
+html:has(.Modal) {
+    scrollbar-color: transparent transparent;
+}
+
+.Modal {
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    width: calc(100% - 16px);
+    max-width: none;
+    max-height: none;
+    margin-top: auto;
+    margin-bottom: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    transition: height .15s ease-out, opacity .15s ease-out;
+    animation: .15s ease fadeIn;
+    touch-action: none;
+}
+
+.Modal:not([open]) {
+    display: none;
+}
+
+.Modal::backdrop {
+    transition: .15s ease;
+    background: rgba(12, 27, 39, .3);
+}
+
+.Modal_Position-fullOpen {
+    height: calc(100% - 90px);
+}
+
+.Modal_Position-halfOpen {
+    height: 50%;
+}
+
+.Modal_Position-tinyOpen {
+    overflow: hidden;
+    height: 15%;
+}
+
+.Modal_Position-hidden {
+    transition: .1s ease;
+    height: 0;
+    opacity: 0;
+}
+
+.ModalTitle {
+    margin: 0;
+    padding: 32px 56px 0 24px;
+    font-size: 24px;
+}
+
+.ModalInner {
+    flex-grow: 1;
+    overflow: auto;
+    border-radius: 24px 24px 0 0;
+    background: var(--background-primary);
+    scrollbar-color: transparent transparent;
+    transition: .15s ease;
+}
+
+.ModalInner:hover {
+    scrollbar-color: #7d828a transparent;
+}
+
+.ModalContent {
+    padding: 0px 24px;
+}
+
+.ModalDragArea {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    height: 76px;
+    margin-bottom: -76px;
+    touch-action: none;
+}
+
+.ModalDragArea::before {
+    content: '';
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    display: block;
+    width: 50px;
+    height: 5px;
+    border-radius: 10px;
+    background: var(--functional-tram);
+    opacity: 0.5;
+    transform: translate(-50%, 0);
+}
+
+/* Крестик живёт внутри модалки и без декора: ни подложки, ни кружка, ни рамки -
+   только сама иконка. Цвет берём из --functional, он уже развёрнут под обе темы. */
+.ModalClose {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    display: flex;
+    padding: 20px;
+    border: 0;
+    background: none;
+    color: var(--functional);
+    cursor: pointer;
+    transition: color .15s ease;
+}
+
+@media (hover) {
+    .ModalClose:hover {
+        color: var(--text-primary);
+    }
+}
+
+.ModalClose:active {
+    color: var(--text-primary);
+}
+
+.ModalClose svg {
+    width: 16px;
+    height: 16px;
+}
+
+@media screen and (min-width: 768px) {
+    .Modal {
+        width: calc(100% - 120px);
+        background: none;
+    }
+
+    .Modal_Align-top {
+        margin-top: 50px;
+        margin-bottom: 0;
+        height: calc(100% - 50px);
+    }
+
+    .Modal_Align-top .ModalInner {
+        border-radius: 24px 24px 0 0;
+    }
+    
+    .Modal_Align-center {
+        margin-top: auto;
+        margin-bottom: auto;
+        height: fit-content;
+    }
+
+    .Modal_Align-center .ModalInner {
+        border-radius: 24px;
+    }
+
+    .ModalDragArea {
+        display: none;
+    }
+
+    .ModalClose {
+        padding: 28px;
+    }
+
+    .ModalClose svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .ModalTitle {
+        padding: 60px 40px 0;
+        font-size: 32px;
+    }
+
+    .ModalContent {
+        padding: 8px;
+    }
+}
+
+@media screen and (min-width: 991px) {
+    .Modal {
+        width: calc(100% - 140px);
+        max-width: 1200px;
+    }
+
+    .ModalTitle {
+        padding: 60px 64px 0;
+        font-size: 32px;
+    }
+
+    .ModalContent {
+        padding: 24px 32px;
+    }
+
+    .ModalClose {
+        padding: 32px;
+    }
+
+    .ModalClose svg {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(32px) translateZ(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateZ(0);
+    }
+}

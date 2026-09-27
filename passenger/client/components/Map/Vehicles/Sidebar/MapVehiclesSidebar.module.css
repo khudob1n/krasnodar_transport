@@ -1,0 +1,545 @@
+.MapVehiclesSidebar {
+    color: var(--text-secondary);
+    background-color: var(--background-primary);
+    height: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 24px;
+}
+
+.MapVehiclesSidebarCloseButton {
+    position: sticky;
+    float: right;
+    margin-bottom: -100%;
+    padding: 0;
+    justify-content: flex-end;
+    margin-right: 16px;
+    top: 16px;
+    z-index: 100;
+
+    border: 0;
+    background: none;
+    cursor: pointer;
+
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 14px;
+    display: flex;
+    border-radius: 50%;
+}
+
+.MapVehiclesSidebarCloseIcon > path {
+    stroke: white;
+}
+
+.MapVehiclesSidebarVehicleImageWrapper {
+    font-size: 0;
+}
+
+.MapVehiclesSidebarVehicleImage {
+    object-fit: cover;
+    object-position: center;
+}
+
+.MapVehiclesSidebarVehicleInfoWrapper {
+    padding: 16px 80px 0 22px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.MapVehiclesSidebarVehicleInfo {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.MapVehiclesSidebarVehicleFeatures {
+    padding: 4px 6px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+}
+
+.MapVehiclesSidebarVehicleFeatureIcon_bus > path {
+    fill: var(--bus);
+}
+
+.MapVehiclesSidebarVehicleFeatureIcon_troll > path {
+    fill: var(--troll);
+}
+
+.MapVehiclesSidebarVehicleFeatureIcon_tram > path {
+    fill: var(--tram);
+}
+
+.MapVehiclesSidebarVelocity {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 20px;
+}
+
+.MapVehiclesSidebarVelocityIcon {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.MapVehiclesSidebarVelocityColorIcon {
+    position: absolute;
+    right: 26px;
+    top: 2px;
+}
+
+.MapVehiclesSidebarVelocityColorIcon_bus > path {
+    stroke: var(--bus);
+}
+
+.MapVehiclesSidebarVelocityColorIcon_troll > path {
+    stroke: var(--troll);
+}
+
+.MapVehiclesSidebarVelocityColorIcon_tram > path {
+    stroke: var(--tram);
+}
+
+.MapVehiclesSidebarVelocityValue {
+    margin-top: 8px;
+}
+
+.MapVehiclesSidebarVelocityMeasure {
+    font-weight: 500;
+    font-size: 7px;
+    line-height: 8px;
+    color: var(--functional-tram);
+}
+
+.MapVehiclesSidebarDirectionInfo {
+    padding: 16px 16px 16px 24px;
+}
+
+.MapVehiclesSidebarDirection {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    position: relative;
+    padding-left: 21px;
+}
+
+.MapVehiclesSidebarHeaderStation {
+    position: relative;
+}
+
+.MapVehiclesSidebarHeaderStation h4 {
+    font-weight: 700;
+}
+
+.MapVehiclesSidebarHeaderStation:first-of-type {
+    padding-bottom: 8px;
+}
+
+.MapVehiclesSidebarHeaderStation::before {
+    content: '';
+    width: 3px;
+    position: absolute;
+    left: -18px;
+    background-color: var(--functional-tram);
+}
+
+.MapVehiclesSidebarHeaderStation:first-of-type::before {
+    top: 50%;
+    bottom: 0;
+}
+
+
+.MapVehiclesSidebarHeaderStation:last-of-type::before {
+    top: 0;
+    bottom: 50%;
+}
+
+.MapVehiclesSidebarHeaderBullet {
+    position: absolute;
+    top: 50%;
+    border-radius: 50%;
+    height: 11px;
+    width: 11px;
+    background-color: white;
+    left: -22px;
+    border: 3px solid var(--functional-tram);
+    transform: translateY(-100%);
+}
+
+.MapVehiclesSidebarHeaderBullet_fill {
+    background-color: var(--functional-tram);
+    transform: translateY(-50%)
+}
+
+.MapVehiclesSidebarHeaderBullet_warning {
+    border-color: var(--tram);
+    background-color: var(--tram);
+}
+
+.MapVehiclesSidebarTo_warning,
+.MapVehiclesSidebarWarningInfo {
+    color: var(--tram);
+}
+
+.MapVehiclesSidebarWarningInfo {
+    margin-top: 4px;
+    padding-left: 18px;
+}
+
+.MapVehiclesSidebarStaleInfo {
+    display: block;
+    margin-top: 4px;
+    padding-left: 18px;
+    color: var(--functional);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.MapVehiclesSidebarActions {
+    margin-top: 12px;
+}
+
+/* «Слежу» - залита цветом вида транспорта, чтобы было видно, что камера привязана к машине. */
+.MapVehiclesSidebarFollow_active,
+.MapVehiclesSidebarFollow_active svg {
+    color: #fff;
+}
+
+.MapVehiclesSidebarFollow_active {
+    background-color: var(--vehicle-color);
+    box-shadow: none;
+}
+
+@media (hover) {
+    .MapVehiclesSidebarFollow_active:hover {
+        background-color: color-mix(in srgb, var(--vehicle-color) 85%, black);
+    }
+}
+
+.MapVehiclesSidebarStopsWrapper {
+    padding: 0 24px;
+}
+
+.MapVehiclesSidebarStops {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    position: relative;
+}
+
+.MapVehiclesSidebarStops::before {
+    content: '';
+    width: 6px;
+    position: absolute;
+    left: 2px;
+    top: 28px;
+    bottom: 28px;
+}
+
+.MapVehiclesSidebarStops_bus::before {
+    background-color: var(--bus-translucent);
+}
+
+.MapVehiclesSidebarStops_troll::before {
+    background-color: var(--troll-translucent);
+}
+
+.MapVehiclesSidebarStops_tram::before {
+    background-color: var(--tram-translucent);
+}
+
+.MapVehiclesSidebarStop {
+    display: flex;
+    gap: 16px;
+    padding: 16px 0 16px 22px;
+    position: relative;
+    cursor: pointer;
+}
+
+.MapVehiclesSidebarStop:hover .MapVehiclesSidebarStopName {
+    color: var(--vehicle-color);
+}
+
+.MapVehiclesSidebarStartStation {
+    font-weight: 500;
+    color: var(--functional-tram);
+}
+
+.MapVehiclesSidebarVehicleMarker {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: -7px;
+    height: 23px;
+    transform: translateY(-94%) scale(0.6);
+}
+
+.MapVehiclesSidebarBullet {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    border-radius: 50%;
+    height: 12px;
+    width: 12px;
+    background-color: white;
+    left: -1px;
+    border: 3px solid;
+    transform: translateY(-50%);
+}
+
+.MapVehiclesSidebarBullet_big {
+    width: 16px;
+    height: 16px;
+    left: -3px;
+    border-width: 4px;
+}
+
+.MapVehiclesSidebarActiveStops {
+    position: relative;
+}
+
+.MapVehiclesSidebarActiveBorder {
+    width: 6px;
+    position: absolute;
+    left: 2px;
+    top: 26px;
+    bottom: 26px;
+}
+
+.MapVehiclesSidebarStopName {
+    flex: 1;
+
+    transition: color 150ms ease-out;
+}
+
+.MapVehiclesSidebarHiddenStationWrapper {
+    position: relative;
+    color: var(--functional-tram);
+}
+
+.MapVehiclesSidebarHiddenCount {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    left: 3px;
+    top: 50%;
+    transform: translateY(calc(-50% - 3px));
+    font-size: 18px;
+    line-height: 6px;
+    color: white;
+}
+
+.MapVehiclesSidebarHiddenCountTextWrapper {
+    display: flex;
+    gap: 8px;
+    padding: 16px 0 16px 22px;
+    cursor: pointer;
+}
+
+.MapVehiclesSidebarHiddenArrow {
+    color: var(--functional-tram);
+    transition: transform 0.2s ease-in-out;
+    transform: rotate(0deg);
+}
+
+.MapVehiclesSidebarHiddenArrow_opened {
+    transform: rotate(180deg);
+}
+
+.MapVehiclesSidebarAdditionalWrapper {
+    padding: 24px 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.MapVehiclesSidebarAdditional {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.MapVehiclesSidebarAdditional .MapVehiclesSidebarAdditionalTitle {
+    text-align: left;
+}
+
+.MapVehiclesSidebarAdditionalTitle {
+    text-align: left;
+}
+
+.MapVehiclesSidebarAdditionalHeader {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+/* Спойлер «Подробнее о трамвае» - скромнее заголовков карточки: это дополнительные сведения.
+   Селектор с родителем - чтобы перебить размер h3 из Typography (там он растёт на десктопе). */
+.MapVehiclesSidebarAdditionalHeader .MapVehiclesSidebarAdditionalTitle {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 22px;
+}
+
+.MapVehiclesSidebarAdditionalArrow {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: var(--functional-tram);
+    transition: transform 0.2s ease-in-out;
+    transform: rotate(0deg);
+}
+
+.MapVehiclesSidebarAdditionalArrow_opened {
+    transform: rotate(180deg);
+}
+
+.MapVehiclesSidebarOperatorWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+}
+
+.MapVehiclesSidebarAdditionalLabel {
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 13px;
+    letter-spacing: 0.06em;
+    color: var(--text-primary);
+    opacity: 40%;
+    text-transform: uppercase;
+}
+
+.MapVehiclesSidebarAdditionalTitle {
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 26px;
+}
+
+.MapVehiclesSidebarAdditionalSubitle {
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.MapVehiclesSidebarBoardId {
+    display: inline-block;
+    max-width: 100%;
+    color: #cb3100;
+    font: 400 36px/34px Marshrut, sans-serif;
+    word-break: break-all;
+}
+
+:global([data-theme='dark']) .MapVehiclesSidebarBoardId {
+    color: #ff6a45;
+}
+
+.MapVehiclesSidebarLabelWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.MapVehiclesSidebarRoadNumberWrapper {
+    display: flex;
+    height: 48px;
+    background-color: #1e2841;
+    --smooth-corners: 0.8;
+    border-radius: 10px;
+    gap: 2px;
+    padding: 2px;
+}
+
+.MapVehiclesSidebarRoadNumber {
+    font: 400 36px/44px RoadNumbers, sans-serif;
+    background-color: #fff;
+    /* Скруглён только внешний (левый) край - внутренний стыкуется с MapVehiclesSidebarRegionWrapper
+       вплотную, скругление там же дало бы линзовидный зазор с фоном плашки-обёртки. */
+    border-radius: 8px 0 0 8px;
+    display: flex;
+    gap: 8px;
+    padding: 9px 15px;
+}
+
+.MapVehiclesSidebarRegionWrapper {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    /* см. комментарий в MapVehiclesSidebarRoadNumber - скруглён только внешний (правый) край */
+    border-radius: 0 8px 8px 0;
+    flex: 1;
+    justify-content: center;
+    width: 58px;
+}
+
+.MapVehiclesSidebarRoadNumberPassenger {
+    background-color: #ffd400;
+}
+
+.MapVehiclesSidebarRegionNumber {
+    font: 400 30px/24px RoadNumbers, sans-serif;
+    padding-top: 9px;
+}
+
+.MapVehiclesSidebarRegion {
+    margin-top: -8px;
+    font: 600 12px/14px Inter, sans-serif;
+}
+
+.MapVehiclesSidebarModelWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.MapVehiclesSidebarFactoryNumber {
+    font: 500 72px/59px Isonorm, sans-serif;
+}
+
+.MapVehiclesSidebarManufactureYear {
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 32px;
+}
+
+.MapVehiclesSidebarManufactureYearDiff {
+    font-size: 18px;
+    line-height: 24px;
+}
+
+@media screen and (max-width: 768px) {
+    .MapVehiclesSidebarVehicleImage {
+        width: 100%;
+        height: 300px;
+
+        object-position: bottom;
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .MapVehiclesSidebarVehicleImage {
+        height: auto;
+
+        object-position: center;
+    }
+}
+/* Пустой, если ID выключены в настройках (DevIds тогда ничего не рисует). */
+.MapVehiclesSidebarDevIds:not(:empty) {
+    padding: 12px 24px 0;
+}

@@ -1,0 +1,35 @@
+{
+  "id": "/map",
+  "name": "Транспорт Краснодара",
+  "short_name": "Транспорт КРД",
+  "description": "Карта общественного транспорта Краснодара: автобусы, троллейбусы и трамваи в реальном времени, остановки, метро и вокзалы.",
+  "lang": "ru",
+  "dir": "ltr",
+  "start_url": "/map",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "categories": ["navigation", "travel", "utilities"],
+  "icons": [
+    {
+      "src": "/favicon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ]
+}

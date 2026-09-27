@@ -1,0 +1,97 @@
+/* Общая кнопка для второстепенных действий в карточках (избранное, расписание): видно, что
+   это кнопка, но она не спорит с заголовком и списком рейсов. Форма - сквирл, как у кнопок
+   карты: небольшой радиус + clip-path из useSmoothCorners (компонент должен подключить хук). */
+.PillButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    width: fit-content;
+    height: 38px;
+    padding: 0 14px 0 12px;
+    border: none;
+    border-radius: 11px;
+    --smooth-corners: 0.8;
+    cursor: pointer;
+
+    color: var(--text-primary);
+    background-color: var(--background-secondary);
+    /* В тёмной теме --background-secondary почти не отличается от фона карточки, и без
+       обводки кнопка терялась бы. */
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--functional-tram) 40%, transparent);
+
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    white-space: nowrap;
+
+    transition:
+        background-color 150ms ease-out,
+        transform 100ms ease-out;
+}
+
+@media (hover) {
+    .PillButton:hover {
+        background-color: color-mix(in srgb, var(--functional-tram) 28%, var(--background-secondary));
+    }
+}
+
+.PillButton:active {
+    transform: scale(0.96);
+}
+
+/* Обводка фокуса внутрь: внешнюю обрезал бы clip-path сквирла. */
+.PillButton:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--functional);
+}
+
+.PillButtonIcon {
+    display: block;
+    flex: none;
+    width: 20px;
+    height: 20px;
+    color: var(--functional);
+}
+
+/* Сетка кнопок в карточках: две равные колонки, и сетка всегда законченная - нечётная
+   последняя кнопка растягивается на весь ряд, пустой клетки справа не остаётся. Подписи
+   («Построить маршрут») и прочее не-кнопки - во всю строку и в подсчёт не входят. */
+.PillButtonGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.PillButtonGrid > :not(button, a, input) {
+    grid-column: 1 / -1;
+}
+
+.PillButtonGrid > :is(button, a) {
+    justify-content: center;
+    width: auto;
+    min-width: 0;
+    /* В узкой колонке (телефон 320px) родные поля таблетки съедали длинные подписи. */
+    padding: 0 8px;
+}
+
+.PillButtonGrid > :is(button, a) > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Последняя среди кнопок (а не среди всех детей: за ними бывает скрытый input) и нечётная. */
+.PillButtonGrid > :is(button, a):nth-child(odd of :is(button, a)):nth-last-child(1 of :is(button, a)) {
+    grid-column: 1 / -1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .PillButton {
+        transition: none;
+    }
+
+    .PillButton:active {
+        transform: none;
+    }
+}

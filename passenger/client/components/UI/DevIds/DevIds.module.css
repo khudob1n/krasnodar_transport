@@ -1,0 +1,55 @@
+.DevIds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px dashed var(--functional-tram);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.DevIdsItem {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.DevIdsItem dt {
+    color: var(--functional);
+}
+
+.DevIdsItem dd {
+    margin: 0;
+}
+
+.DevIdsItem button {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    color: var(--text-primary);
+    background: none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    cursor: copy;
+}
+
+.DevIdsItem button:hover {
+    text-decoration: underline;
+}
+
+.DevIdsItem button:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.DevIdsCopied {
+    color: var(--bus);
+    font-family: 'Onest', sans-serif;
+    font-size: 11px;
+}

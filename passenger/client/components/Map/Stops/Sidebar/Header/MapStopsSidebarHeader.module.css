@@ -1,0 +1,62 @@
+.MapStopsSidebarHeader {
+    position: relative;
+    display: flex;
+    gap: 16px;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    /* Справа место только под крестик закрытия Sidepage - кнопка избранного живёт внизу
+       карточки, рядом с расписанием. */
+    padding-right: 64px;
+
+    background-color: var(--background-primary);
+    border-bottom: 1px solid var(--background-secondary);
+}
+
+.MapStopsSidebarHeaderWrapper {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    overflow: hidden;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    background-color: var(--background-primary);
+}
+
+.MapStopsSidebarHeaderIcon {
+    height: 37px;
+    width: auto;
+    max-width: 76px;
+    flex: 0 0 auto;
+}
+
+.MapStopsSidebarHeaderInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.MapStopsSidebarHeaderTitle {
+    min-width: 0;
+}
+
+/* Тип остановки над названием - в том же виде, что тип станции в RailSidebar. */
+.MapStopsSidebarHeaderKind {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 16px;
+}
+
+.MapStopsSidebarHeaderInfo h4 {
+    min-width: 0;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.12;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
+

@@ -1,0 +1,96 @@
+.ScheduleGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ScheduleGridFilter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    padding: 4px 6px;
+    border: 0;
+    color: var(--text-secondary);
+    background: none;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 18px;
+    cursor: pointer;
+    border-radius: 6px;
+    outline: none;
+}
+
+.ScheduleGridFilter:focus-visible {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--functional) 45%, transparent);
+}
+
+.ScheduleGridFilter:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.ScheduleGridFilterArrow {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    color: var(--functional-tram);
+    transition: transform 0.2s ease;
+    transform: rotate(180deg);
+}
+
+.ScheduleGridFilterArrowCollapsed {
+    transform: rotate(0);
+}
+
+.ScheduleGridRows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Плашка часа тянется на всю высоту своих минут: когда минут много и они переносятся на
+   вторую-третью строку, иначе перенесённые минуты висели бы между двумя часами и было
+   непонятно, к какому из них относятся. Сам номер часа остаётся на уровне первой строки. */
+.ScheduleGridRow {
+    display: grid;
+    grid-template-columns: 54px 1fr;
+    align-items: stretch;
+    gap: 14px;
+}
+
+.ScheduleGridRow > strong {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 42px;
+    /* (42 - 24) / 2: центр цифр часа совпадает с центром первой строки минут. */
+    padding-top: 9px;
+    border-radius: 10px;
+    color: var(--text-primary);
+    background: var(--background-secondary);
+    font-size: 19px;
+    line-height: 24px;
+}
+
+.ScheduleGridRow > div {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+    gap: 8px 10px;
+    padding: 10px 0;
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 22px;
+}
+
+.ScheduleGridRow span {
+    text-align: center;
+}
+
+.ScheduleGridEmpty {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 20px;
+}

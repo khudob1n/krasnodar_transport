@@ -1,0 +1,29 @@
+# Зависимости и сборки
+node_modules/
+.next/
+build/
+dist/
+.gradle/
+.kotlin/
+*.tsbuildinfo
+
+# Секреты и локальные настройки: .env лежат только на серверах и у разработчика
+.env
+.env.*
+!.env.example
+local.properties
+
+# Данные, которые живут на сервере: база админки, история движения
+admin/api/prisma/var/
+server/var/
+
+# Ключи подписи Android (хранятся вне проекта) и собранные выпуски
+*.jks
+*.keystore
+keystore.properties
+android/release/
+
+.DS_Store
+.idea/
+*.iml
+.claude/

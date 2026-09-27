@@ -1,0 +1,15 @@
+[Unit]
+Description=KRD transport: прокси живого фида krdpt, пробок и геокодера
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=krd
+WorkingDirectory=/opt/krd/server
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node --env-file=.env src/index.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

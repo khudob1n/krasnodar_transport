@@ -1,0 +1,31 @@
+{
+  "name": "krd-transport-admin-api",
+  "version": "0.1.0",
+  "description": "Admin panel backend: auth, users, and read/edit access to proxy + reference data.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "node --env-file=.env --watch src/index.js",
+    "start": "node --env-file=.env src/index.js",
+    "migrate": "node --env-file=.env node_modules/.bin/prisma migrate dev",
+    "generate": "node_modules/.bin/prisma generate",
+    "seed": "node --env-file=.env prisma/seed.mjs",
+    "create-superuser": "node --env-file=.env scripts/create-superuser.mjs"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2",
+    "jose": "^5.9.6"
+  },
+  "devDependencies": {
+    "prisma": "^6.5.0"
+  },
+  "allowScripts": {
+    "@prisma/client@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "prisma@6.19.3": true
+  }
+}

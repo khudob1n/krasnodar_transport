@@ -1,0 +1,80 @@
+.MapStopSchedule {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-top: 4px;
+}
+
+.MapStopScheduleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.MapStopScheduleLabel {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.MapStopScheduleRouteGroups {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.MapStopScheduleRouteGroup {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.MapStopScheduleRouteTypeIcon {
+    width: 26px;
+    height: 26px;
+    flex: 0 0 26px;
+    opacity: 0.48;
+    transition: opacity 0.15s ease;
+}
+
+.MapStopScheduleRouteTypeIconActive {
+    opacity: 1;
+}
+
+.MapStopScheduleRoute {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex: none;
+    padding: 3px;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    opacity: 0.48;
+    cursor: pointer;
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
+}
+
+.MapStopScheduleRouteActive {
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+@media (hover) {
+    .MapStopScheduleRoute:hover {
+        opacity: 0.8;
+    }
+
+    .MapStopScheduleRouteActive:hover {
+        opacity: 1;
+    }
+}
+
+.MapStopScheduleNote {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 17px;
+}

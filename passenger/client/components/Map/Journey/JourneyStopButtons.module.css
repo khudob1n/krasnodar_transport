@@ -1,0 +1,33 @@
+/* Метка точки маршрута на месте иконки таблетки (PillButtonIcon - 18px). Цвета A и B - как у
+   меток на карте и в полях панели «Маршрут» (MapJourneySidebar.module.css). */
+.JourneyStopMarker {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.JourneyStopMarker_A {
+    background-color: #2e7d32;
+}
+
+.JourneyStopMarker_B {
+    background-color: #d32f2f;
+}
+
+/* Подпись над парой «Отсюда» / «Сюда» - на всю ширину сетки действий карточки. */
+.JourneyStopCaption {
+    grid-column: 1 / -1;
+    margin-bottom: -2px;
+    color: var(--functional);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+}

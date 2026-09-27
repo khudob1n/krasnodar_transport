@@ -1,0 +1,386 @@
+@font-face {
+  font-family: 'Iset Sans';
+  src: url('/design/fonts/IsetSans-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Iset Sans';
+  src: url('/design/fonts/IsetSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Iset Sans';
+  src: url('/design/fonts/IsetSans-Regular-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Iset Sans';
+  src: url('/design/fonts/IsetSans-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Iset Sans';
+  src: url('/design/fonts/IsetSans-SemiBold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Дизайн-код Екатеринбурга: акцент и официальные цвета видов транспорта.
+     Источник: design/README.md в корне проекта. */
+  --ekb-accent: #ffd400;
+  --ekb-accent-hover: #e6bf00;
+  --ekb-accent-contrast: #16181d;
+  --ekb-bus: #26a63f;
+  --ekb-tram: #ef7f1a;
+  --ekb-trolleybus: #199ed9;
+  --ekb-danger: #d1372e;
+  --ekb-danger-bg: #fdecea;
+  --ekb-success: #1e8e3e;
+  --ekb-sidebar: #0c0d10;
+
+  /* Поверхности и текст */
+  --surface: #ffffff;
+  --surface-muted: #f6f7f9;
+  --surface-sunken: #eef0f3;
+  --page-bg: #f2f3f6;
+  --border: #e3e5ea;
+  --border-strong: #d3d6dc;
+  --text-primary: #16181d;
+  --text-secondary: #5b6270;
+  --text-tertiary: #9aa1ad;
+
+  /* Ритм */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(16, 18, 22, 0.06);
+  --shadow-md: 0 4px 16px rgba(16, 18, 22, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+html {
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  margin: 0;
+  font-family: 'Iset Sans', system-ui, -apple-system, sans-serif;
+  color: var(--text-primary);
+  background: var(--page-bg);
+  font-size: 14px;
+  line-height: 1.5;
+}
+a {
+  color: inherit;
+}
+
+/* Типографика */
+h1, h2, h3 {
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+h1 {
+  font-size: 24px;
+  margin: 0 0 4px;
+}
+h2 {
+  font-size: 16px;
+  margin: 0 0 10px;
+}
+h3 {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+.page-subtitle {
+  margin: 0 0 22px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* Таблицы */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th, td {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+th {
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid var(--border-strong);
+  white-space: nowrap;
+}
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s ease;
+}
+tbody tr:last-child {
+  border-bottom: none;
+}
+tbody tr:hover {
+  background: var(--surface-muted);
+}
+td {
+  color: var(--text-primary);
+}
+td.numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+td.muted {
+  color: var(--text-secondary);
+}
+td.mono, .mono {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12.5px;
+}
+
+/* Формы */
+button, input, select, textarea {
+  font: inherit;
+}
+label {
+  display: block;
+}
+button {
+  cursor: pointer;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.05s ease;
+}
+button:hover {
+  background: var(--surface-muted);
+}
+button:active {
+  transform: translateY(1px);
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+}
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--ekb-accent);
+  outline-offset: 1px;
+}
+button.primary {
+  background: var(--ekb-accent);
+  border-color: var(--ekb-accent);
+  color: var(--ekb-accent-contrast);
+}
+button.primary:hover {
+  background: var(--ekb-accent-hover);
+  border-color: var(--ekb-accent-hover);
+}
+button.danger {
+  border-color: var(--border-strong);
+  color: var(--ekb-danger);
+}
+button.danger:hover {
+  background: var(--ekb-danger-bg);
+  border-color: var(--ekb-danger);
+}
+button.ghost {
+  border-color: transparent;
+  background: transparent;
+}
+button.ghost:hover {
+  background: var(--surface-muted);
+}
+input[type='text'], input[type='email'], input[type='password'], input[type='number'], input[type='search'], textarea, select {
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  width: 100%;
+}
+input::placeholder, textarea::placeholder {
+  color: var(--text-tertiary);
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--ekb-accent);
+}
+input:disabled, select:disabled, textarea:disabled {
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Поверхности */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Состояния */
+.error {
+  color: var(--ekb-danger);
+  font-size: 13px;
+  background: var(--ekb-danger-bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin: 0 0 16px;
+}
+.saved-msg {
+  color: var(--ekb-success);
+  font-size: 13px;
+}
+.empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+.empty-state .icon {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 12px;
+  opacity: 0.4;
+}
+.loading-state {
+  padding: 32px 24px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+/* Мелкие переиспользуемые элементы */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 100px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.status-dot.ok {
+  background: var(--ekb-success);
+  box-shadow: 0 0 0 3px rgba(30, 142, 62, 0.15);
+}
+.status-dot.error {
+  background: var(--ekb-danger);
+  box-shadow: 0 0 0 3px rgba(209, 55, 46, 0.15);
+}
+.pill-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+.pill-toggle input {
+  width: auto;
+  accent-color: var(--ekb-accent-contrast);
+}
+.pill-toggle.active {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: #fff;
+}
+
+/* Переключатель (toggle switch) */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 21px;
+  flex-shrink: 0;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.switch-track {
+  position: absolute;
+  inset: 0;
+  background: var(--border-strong);
+  border-radius: 100px;
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+.switch-track::before {
+  content: '';
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  left: 2px;
+  top: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+.switch input:checked + .switch-track {
+  background: var(--ekb-accent);
+}
+.switch input:checked + .switch-track::before {
+  transform: translateX(15px);
+}
+.switch input:disabled + .switch-track {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Скроллируемый контейнер для больших таблиц */
+.table-scroll {
+  overflow: auto;
+  max-height: 72vh;
+  border-radius: var(--radius-lg);
+}
+.table-scroll table {
+  border-radius: var(--radius-lg);
+}

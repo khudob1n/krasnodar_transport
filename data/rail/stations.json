@@ -1,0 +1,7 @@
+[
+  {"id": "krasnodar-1", "name": "Краснодар-1", "kind": "railway_station", "description": "Центральный железнодорожный вокзал", "lat": 45.0186, "lng": 38.9888},
+  {"id": "krasnodar-1-bus-terminal", "name": "Автовокзал Краснодар-1", "kind": "bus_terminal", "description": "На Привокзальной площади, рядом с ж/д вокзалом", "lat": 45.01954, "lng": 38.98791},
+  {"id": "krasnodar-2-bus-terminal", "name": "Автостанция Краснодар-2", "kind": "bus_terminal", "description": "Улица Гаврилова", "lat": 45.05465, "lng": 38.98609},
+  {"id": "south-bus-terminal", "name": "Автовокзал «Южный»", "kind": "bus_terminal", "description": "Береговая улица", "lat": 44.99761, "lng": 38.95907},
+  {"id": "pashkovsky-airport", "name": "Аэропорт Пашковский", "kind": "airport", "description": "Международный аэропорт Краснодара", "lat": 45.0343, "lng": 39.1397}
+]

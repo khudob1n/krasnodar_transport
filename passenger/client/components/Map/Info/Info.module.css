@@ -1,0 +1,22 @@
+.MapInfo {
+    border: none;
+    background-color: var(--background-primary);
+    width: 48px;
+    height: 48px;
+    --smooth-corners: 0.8;
+    border-radius: 16px;
+    color: var(--text-primary);
+    padding: 1px 6px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+
+    transition: 100ms color ease-out;
+}
+
+.MapInfo_opened {
+    color: var(--functional-tram);
+}

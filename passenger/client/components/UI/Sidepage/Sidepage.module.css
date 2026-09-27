@@ -1,0 +1,165 @@
+.Sidepage {
+    --smooth-corners: 0.8;
+    border-radius: 24px;
+    background-color: var(--background-primary);
+
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.Sidepage::-webkit-scrollbar {
+    display: none;
+}
+
+
+.SidepageContent,
+.SidepageContent > * {
+    border-radius: 24px;
+}
+
+.SidepageDragArea {
+    display: none;
+    position: sticky;
+    top: 0;
+    left: 0;
+    margin-bottom: -76px;
+    height: 76px;
+    touch-action: none;
+    z-index: 1;
+}
+
+.SidepageDragArea::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    opacity: 0.5;
+    width: 50px;
+    height: 5px;
+    border-radius: 10px;
+    background: var(--functional-tram);
+}
+
+.SidepageCloseButton {
+    position: sticky;
+    float: right;
+    margin: 6px 6px -100% 0;
+    top: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.SidepageCloseButtonWrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    z-index: 100;
+
+    color: rgba(0, 0, 0, 0.5);
+    padding: 8px;
+    transition: .15s ease;
+}
+
+:global([data-theme='dark']) .SidepageCloseButtonWrapper {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.SidepageCloseButtonWrapper svg {
+    width: 15px;
+    height: 15px;
+}
+
+@media screen and (min-width: 769px) {
+    .SidepageCloseButton {
+        margin: 8px 8px -100% 0;
+    }
+
+    .SidepageCloseButtonWrapper {
+        padding: 9px;
+    }
+
+    .SidepageCloseButtonWrapper svg {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+@media (hover) {
+    .SidepageCloseButton:hover .SidepageCloseButtonWrapper {
+        color: rgba(0, 0, 0, 0.75);
+    }
+
+    :global([data-theme='dark']) .SidepageCloseButton:hover .SidepageCloseButtonWrapper {
+        color: rgba(255, 255, 255, 0.85);
+    }
+}
+
+.SidepageCloseButton:active .SidepageCloseButtonWrapper {
+    color: rgba(0, 0, 0, 1);
+}
+
+:global([data-theme='dark']) .SidepageCloseButton:active .SidepageCloseButtonWrapper {
+    color: rgba(255, 255, 255, 1);
+}
+
+.SidepageCloseIcon > path {
+    stroke: currentColor;
+    transition: .15s ease;
+}
+
+@media screen and (max-width: 768px) {
+    .Sidepage {
+        position: fixed;
+        width: calc(100% - 16px);
+        margin: 0;
+        max-height: calc(100% - 90px);
+        left: 8px !important;
+        bottom: 0;
+        top: initial !important;
+        transition: height .15s ease-out, opacity .15s ease-out;
+        will-change: height;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .SidepageContent {
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        overscroll-behavior-y: contain;
+    }
+
+    .SidepageContent > * {
+        flex-grow: 1;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .Sidepage_fullOpen {
+        height: calc(100% - 90px);
+    }
+
+    .Sidepage_halfOpen {
+        height: 50%;
+    }
+
+    .Sidepage_tinyOpen {
+        overflow: hidden;
+        height: 15%;
+    }
+
+    .Sidepage_hidden {
+        height: 0;
+        opacity: 0;
+    }
+
+    .SidepageDragArea {
+        display: block;
+    }
+}

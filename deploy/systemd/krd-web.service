@@ -1,0 +1,15 @@
+[Unit]
+Description=KRD transport: пассажирский сайт (Next.js)
+After=network-online.target krd-admin-api.service
+Wants=network-online.target
+
+[Service]
+User=krd
+WorkingDirectory=/opt/krd/passenger/client
+Environment=NODE_ENV=production
+ExecStart=/opt/krd/passenger/client/node_modules/.bin/next start -p 3100 -H 127.0.0.1
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

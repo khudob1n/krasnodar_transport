@@ -1,0 +1,172 @@
+.MapStopsItemIcon {
+    transition: height 150ms ease-out, width 150ms ease-out, margin 150ms ease-out;
+}
+
+.MapStopsItemIcon:hover {
+    will-change: height, width, margin;
+}
+
+.MapStopsItemPin {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    box-sizing: border-box;
+    border: 1px solid var(--background-tertiary, #e6e4e0);
+    border-radius: 50%;
+    background: var(--background-primary);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 16%);
+    /* Размер из настроек; масштабируем внутренний значок, а не маркер Leaflet. */
+    scale: var(--icon-scale-stops-effective);
+}
+
+.MapStopsItemPin svg {
+    width: 15px;
+    height: 15px;
+}
+
+.MapStopsItemPin_inactive {
+    opacity: 0.35;
+}
+
+.MapStopsItemPin_selected {
+    box-shadow: 0 0 0 2px currentColor, 0 1px 3px rgb(0 0 0 / 20%);
+}
+
+.MapStopsItemIconActive {
+    margin: -24px 0 0 -24px !important;
+    z-index: 10000 !important;
+    /* Коробка активного значка 48x48 центрирована по точке остановки (margin выше), а сам
+       значок раньше лежал в её левом верхнем углу - и выбранная остановка съезжала с места
+       на 12px влево-вверх. Центрируем. */
+    display: grid;
+    place-items: center;
+}
+
+/* Цвет выбранной остановки - цвет её вида транспорта; совмещённая остановка троллейбуса и
+   автобуса окрашена как троллейбус, так же, как её значок (TransportIcon). */
+.MapStopsItemIconActive {
+    --MapStopActiveColor: var(--text-primary);
+}
+
+.MapStopsItemIconActive_bus {
+    --MapStopActiveColor: var(--bus);
+}
+
+.MapStopsItemIconActive_tram {
+    --MapStopActiveColor: var(--tram);
+}
+
+.MapStopsItemIconActive_troll,
+.MapStopsItemIconActive_troll-bus {
+    --MapStopActiveColor: var(--troll);
+}
+
+/* Выбранная остановка: крупнее, с обводкой и мягкой пульсацией, чтобы её сразу было видно
+   после перелёта камеры из поиска. */
+.MapStopsItemIconActive .MapStopsItemPin {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    box-shadow:
+        0 0 0 3px var(--background-primary),
+        0 0 0 5px var(--MapStopActiveColor),
+        0 2px 8px 5px rgb(0 0 0 / 20%);
+}
+
+.MapStopsItemIconActive .MapStopsItemPin svg {
+    width: 24px;
+    height: 24px;
+}
+
+.MapStopsItemIconActive .MapStopsItemPin::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 2px solid var(--MapStopActiveColor);
+    animation: MapStopsItemPulse 1.6s ease-out infinite;
+    pointer-events: none;
+}
+
+@keyframes MapStopsItemPulse {
+    from {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    /* Кольцо расходится до ~32px от центра - не дальше подписи справа (она в 34px). */
+    to {
+        opacity: 0;
+        transform: scale(1.3);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .MapStopsItemIconActive .MapStopsItemPin::after {
+        display: none;
+    }
+}
+
+.MapStopsItemIconSelected {
+    z-index: 10000 !important;
+}
+
+/* Подпись остановки. Leaflet рисует tooltip как белую плашку с рамкой, тенью и хвостиком-
+   стрелкой - всё это здесь не нужно, нужна голая надпись поверх карты. Селекторы утяжелены
+   :global(.leaflet-tooltip*), потому что leaflet.css подключается из MapMainContainer, и при
+   равной специфичности побеждал бы он, а не этот модуль. */
+:global(.leaflet-tooltip).MapStopsItemLabel {
+    background: none;
+    border: none;
+    box-shadow: none;
+    /* Подпись кликабельна (interactive у Tooltip), а строка в 16px - мелковатая цель, поэтому
+       немного расширяем её невидимыми полями; offset у Tooltip уменьшен на ту же величину,
+       чтобы текст остался на месте. */
+    padding: 3px 4px;
+
+    font-family: 'Onest', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+    color: var(--text-primary);
+
+    /* Подложки нет, поэтому читаемость на пёстрой карте держится на обводке цветом фона темы:
+       в светлой она белая, в тёмной - почти чёрная. */
+    text-shadow: -2px 0 var(--background-primary), 2px 0 var(--background-primary),
+        0 -2px var(--background-primary), 0 2px var(--background-primary),
+        -1.5px -1.5px var(--background-primary), 1.5px -1.5px var(--background-primary),
+        -1.5px 1.5px var(--background-primary), 1.5px 1.5px var(--background-primary);
+}
+
+/* Подпись отодвигается вместе с краем увеличенного значка: offset у Tooltip задан для
+   исходного размера, разницу добавляем отступом (полуширина значка x (масштаб - 1)).
+   Переменная --MapLabelScale и полуширина --MapLabelHalf задаются классами ниже по видам. */
+:global(.leaflet-tooltip).MapStopsItemLabel {
+    margin-left: calc((var(--MapLabelScale, var(--icon-scale-stops-effective)) - 1) * var(--MapLabelHalf, 12px));
+}
+
+/* У выбранной остановки край значка дальше от точки: 20px радиус + 5px обводка. */
+:global(.leaflet-tooltip).MapStopsItemLabel_active {
+    --MapLabelHalf: 25px;
+}
+
+:global(.leaflet-tooltip).MapLabel_rail {
+    --MapLabelScale: var(--icon-scale-rail-effective);
+    --MapLabelHalf: 11px;
+}
+
+:global(.leaflet-tooltip).MapLabel_airport {
+    --MapLabelScale: var(--icon-scale-airport-effective);
+    --MapLabelHalf: 11px;
+}
+
+:global(.leaflet-tooltip).MapLabel_other {
+    --MapLabelScale: var(--icon-scale-other-effective);
+    --MapLabelHalf: 11px;
+}
+
+:global(.leaflet-tooltip-right).MapStopsItemLabel::before,
+:global(.leaflet-tooltip-left).MapStopsItemLabel::before {
+    display: none;
+}

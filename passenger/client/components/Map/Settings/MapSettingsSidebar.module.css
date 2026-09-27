@@ -1,0 +1,277 @@
+.MapSettingsSidebar {
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    border-radius: 16px;
+    padding-bottom: 8px;
+}
+
+.MapSettingsSidebarHeader {
+    /* Справа оставляем место под крестик закрытия, который Sidepage кладёт поверх карточки. */
+    padding: 18px 80px 18px 22px;
+}
+
+.MapSettingsSidebarHeader h4 {
+    font-weight: 700;
+}
+
+.MapSettingsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 18px 22px 16px;
+}
+
+.MapSettingsSectionTitle {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 16px;
+}
+
+.MapSettingsSlider {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Общий ползунок отделён от ползунков по видам - он действует на все сразу. */
+.MapSettingsSlider_main {
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--background-secondary);
+}
+
+.MapSettingsSliderHeader {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.MapSettingsSliderLabel {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.MapSettingsSliderLabel span {
+    color: var(--functional);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+}
+
+.MapSettingsSliderValue {
+    flex: none;
+    min-width: 44px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.MapSettingsRange {
+    width: 100%;
+    height: 24px;
+    margin: 0;
+    accent-color: var(--text-primary);
+    cursor: pointer;
+}
+
+.MapSettingsRange:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.MapSettingsReset:disabled {
+    opacity: 0.45;
+    cursor: default;
+    transform: none;
+}
+
+/* Выбор темы: три равные кнопки одной полосой, выбранная - контрастная. */
+.MapSettingsSegmented {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding: 4px;
+    border-radius: 14px;
+    background: var(--background-secondary);
+}
+
+.MapSettingsSegment {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 56px;
+    padding: 6px 4px;
+    border: 0;
+    border-radius: 10px;
+    color: var(--text-secondary);
+    background: none;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+@media (hover) {
+    .MapSettingsSegment:hover {
+        color: var(--text-primary);
+    }
+}
+
+.MapSettingsSegment:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: 1px;
+}
+
+.MapSettingsSegment_active {
+    color: var(--text-primary);
+    background: var(--background-primary);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
+}
+
+.MapSettingsSwitchRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    cursor: pointer;
+}
+
+/* Переключатель на обычном чекбоксе (role="switch"): дорожка 40x24 и бегунок. */
+.MapSettingsSwitch {
+    flex: none;
+    position: relative;
+    width: 40px;
+    height: 24px;
+    margin: 0;
+    border-radius: 12px;
+    background: var(--background-secondary);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--functional-tram) 50%, transparent);
+    appearance: none;
+    cursor: pointer;
+    transition: background-color 150ms ease-out;
+}
+
+.MapSettingsSwitch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--background-primary);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 25%);
+    transition: transform 150ms ease-out;
+}
+
+.MapSettingsSwitch:checked {
+    background: var(--MapSettingsSwitchColor, var(--text-primary));
+}
+
+.MapSettingsSwitch:checked::after {
+    transform: translateX(16px);
+}
+
+.MapSettingsSwitch:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .MapSettingsSwitch,
+    .MapSettingsSwitch::after {
+        transition: none;
+    }
+}
+
+/* Подпись над полосой выбора (подложка, стартовая точка и т. п.). */
+.MapSettingsField {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Варианты без иконок - ниже, чем кнопки темы. */
+.MapSettingsSegment_compact {
+    min-height: 36px;
+}
+
+.MapSettingsList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.MapSettingsList_separated {
+    padding-top: 16px;
+    border-top: 1px solid var(--background-secondary);
+}
+
+.MapSettingsNote {
+    margin: 0;
+    color: var(--functional);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.MapSettingsAction,
+.MapSettingsAction:visited {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.MapSettingsAction:disabled {
+    opacity: 0.45;
+    cursor: default;
+    transform: none;
+}
+
+.MapSettingsAction_danger {
+    color: #fff;
+    background-color: #d63c3c;
+    box-shadow: none;
+}
+
+.MapSettingsAction_danger .PillButtonIcon,
+.MapSettingsAction_danger svg {
+    color: #fff;
+}
+
+@media (hover) {
+    .MapSettingsAction_danger:hover {
+        background-color: #bf2f2f;
+    }
+}
+
+.MapSettingsAbout {
+    gap: 12px;
+}
+
+/* Мини-карта прилипает к верху панели, пока листаешь слои и размеры меток. На низких экранах
+   (телефон) не прилипает - там она заняла бы почти всё место. */
+.MapSettingsPreviewSticky {
+    padding: 18px 22px 0;
+    background: var(--background-primary);
+}
+
+@media (min-height: 900px) {
+    .MapSettingsPreviewSticky {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        padding-bottom: 8px;
+    }
+}

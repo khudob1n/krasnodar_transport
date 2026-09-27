@@ -1,0 +1,20 @@
+/* Тот же визуальный язык, что у components/Map/Info/Info.module.css (белый кружок 48px). */
+.ThemeToggle {
+    border: none;
+    background-color: var(--background-primary);
+    width: 48px;
+    height: 48px;
+    --smooth-corners: 0.8;
+    border-radius: 16px;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+:global([data-theme='dark']) .ThemeToggle {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}

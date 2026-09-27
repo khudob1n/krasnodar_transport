@@ -1,0 +1,12 @@
+.gradle/
+.kotlin/
+build/
+local.properties
+*.iml
+.idea/
+# Собранные выпуски - в release/, в репозиторий не кладём.
+release/
+# Ключи подписи хранятся вне проекта, но на всякий случай.
+*.jks
+*.keystore
+keystore.properties

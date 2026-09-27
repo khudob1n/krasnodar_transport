@@ -1,0 +1,7 @@
+/* Leaflet даёт контролам свою рамку и фон - кнопка карты рисует их сама. */
+.MapJourneyControl {
+    /* Над масштабом (order: 1) и «Где я» (order: 2). */
+    order: 0;
+    border: none !important;
+    background: none !important;
+}

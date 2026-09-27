@@ -1,0 +1,51 @@
+/* Плашка погоды - в высоту как кнопки карты (48px), по ширине - по содержимому. */
+.MapWeather {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 6px;
+    height: 48px;
+    padding: 0 14px 0 12px;
+    --smooth-corners: 0.8;
+    border-radius: 16px;
+    color: var(--text-primary);
+    background-color: var(--background-primary);
+    font-family: 'Onest', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 22px;
+    /* Обычные, не моноширинные цифры: у Onest табличные заметно разрежены («+1 5°»). */
+    cursor: default;
+}
+
+.MapWeather > svg {
+    flex: none;
+    color: var(--functional);
+}
+
+/* На телефоне в верхнем ряду места нет: поиск и четыре кнопки уже впритык. */
+@media screen and (max-width: 768px) {
+    .MapWeather {
+        display: none;
+    }
+}
+
+/* Пробки: балл в кружке цвета загруженности, как у Яндекса. */
+.MapTrafficLevel {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.MapTrafficLabel {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+}

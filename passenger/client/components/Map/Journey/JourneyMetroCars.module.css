@@ -1,0 +1,67 @@
+.JourneyMetroCars {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    align-self: flex-start;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background-color: color-mix(in srgb, var(--MetroLineColor) 12%, transparent);
+}
+
+.JourneyMetroCarsTrain {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+/* Вагон - плашка с полосой окон; головной (слева) скруглён спереди сильнее. */
+.JourneyMetroCar {
+    position: relative;
+    width: 26px;
+    height: 13px;
+    border-radius: 4px;
+    border: 1.5px solid var(--functional);
+    opacity: 0.55;
+}
+
+.JourneyMetroCar::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    top: 3px;
+    height: 3px;
+    border-radius: 1px;
+    background-color: currentColor;
+    color: var(--functional);
+}
+
+.JourneyMetroCar_head {
+    border-top-left-radius: 9px;
+}
+
+.JourneyMetroCar_target {
+    border-color: var(--MetroLineColor);
+    background-color: var(--MetroLineColor);
+    opacity: 1;
+}
+
+.JourneyMetroCar_target::after {
+    color: #fff;
+    opacity: 0.8;
+}
+
+.JourneyMetroCarsText {
+    display: flex;
+    flex-direction: column;
+    color: var(--functional);
+    font-size: 13px;
+    line-height: 17px;
+}
+
+.JourneyMetroCarsText strong {
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+}

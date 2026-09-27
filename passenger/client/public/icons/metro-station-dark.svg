@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <!-- Based on Ekb metro logo: https://commons.wikimedia.org/wiki/File:Ekb_metro_logo.svg -->
+  <circle cx="12" cy="12" r="11" fill="#1f2228" stroke="#52c7b4" stroke-width="1.5"/>
+  <path transform="translate(5 6) scale(.25)" d="m28 48-28-25v-23l28 26 28-26v23zm-9-4v4l-19-.0039v-21zm37-17v21h-19v-4z" fill="#52c7b4"/>
+</svg>

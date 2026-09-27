@@ -1,0 +1,18 @@
+[Unit]
+Description=KRD transport: пешеходный роутинг OSRM (профиль foot)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker rm -f krd-osrm
+ExecStart=/usr/bin/docker run --rm --name krd-osrm -p 127.0.0.1:5000:5000 \
+    -v /var/lib/krd-osrm/data:/data:ro --memory=600m \
+    ghcr.io/project-osrm/osrm-backend:v5.27.1 \
+    osrm-routed --algorithm mld --max-table-size 200 /data/krd.osrm
+ExecStop=/usr/bin/docker stop krd-osrm
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

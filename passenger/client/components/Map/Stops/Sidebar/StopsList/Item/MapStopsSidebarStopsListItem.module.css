@@ -1,0 +1,147 @@
+.MapStopsSidebarVehicle {
+    display: flex;
+    gap: 32px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: .15s ease;
+    box-shadow: 0 0 0 12px var(--background-primary);
+    background: var(--background-primary);
+}
+
+@media (hover) {
+    .MapStopsSidebarVehicle:not(.MapStopsSidebarVehicle_isSelected):hover {
+        background: var(--background-secondary);
+        box-shadow: 0 0 0 12px var(--background-secondary);
+    }
+}
+
+.MapStopsSidebarVehicle:active {
+    filter: contrast(.9);
+}
+
+.MapStopsSidebarVehicle_isSelected {
+    background: var(--vehicle-color);
+    color: #fff;
+    box-shadow: 0 0 0 12px var(--vehicle-color);
+}
+
+.MapStopsSidebarVehicleInfo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    /* Без этого длинная конечная не переносится и выталкивает время за край экрана. */
+    min-width: 0;
+}
+
+.MapStopsSidebarVehicleText {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.MapStopsSidebarVehicle:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: 12px;
+}
+
+/* Узкий телефон: 32px между названием и временем - это четверть ширины строки. */
+@media screen and (max-width: 400px) {
+    .MapStopsSidebarVehicle {
+        gap: 12px;
+    }
+
+    .MapStopsSidebarVehicleInfo {
+        gap: 12px;
+    }
+}
+
+.MapStopsSidebarVehicleRouteBus {
+    background-color: var(--bus);
+}
+
+.MapStopsSidebarVehicleRouteTram {
+    background-color: var(--tram);
+}
+
+.MapStopsSidebarVehicleRouteTroll {
+    background-color: var(--troll);
+}
+
+.MapStopsSidebarVehicleEndpoint {
+    padding-top: .2em;
+    font-size: 16px;
+    line-height: 1.1;
+}
+
+.MapStopsSidebarVehicleKeypoints,
+.MapStopsSidebarVehicleArriveTime {
+    padding-top: .5em;
+    font-size: 14px;
+    line-height: 1.125;
+}
+
+.MapStopsSidebarVehicleKeypoints {
+    font-weight: 300;
+}
+
+@media screen and (min-width: 769px) {
+    .MapStopsSidebarVehicleRoute {
+        font-size: 28px;
+    }
+    
+    .MapStopsSidebarVehicleEndpoint {
+        font-size: 20px;
+    }
+
+    .MapStopsSidebarVehicleKeypoints,
+    .MapStopsSidebarVehicleArriveTime {
+        font-size: 16px;
+    }
+}
+/* Колокольчик напоминания под временем прибытия (TASK-208). */
+.MapStopsSidebarVehicleArriveTime {
+    display: flex;
+    align-items: flex-start;
+    gap: 2px;
+    white-space: nowrap;
+}
+
+.MapStopsSidebarVehicleReminder {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 28px;
+    height: 28px;
+    margin: -0.45em -6px 0 0;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    color: var(--functional);
+    background: none;
+    cursor: pointer;
+}
+
+@media (hover) {
+    .MapStopsSidebarVehicleReminder:hover {
+        color: var(--text-primary);
+        background: var(--background-secondary);
+    }
+}
+
+.MapStopsSidebarVehicleReminder:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: -2px;
+}
+
+.MapStopsSidebarVehicleReminder_active {
+    color: var(--tram);
+}
+
+.MapStopsSidebarVehicle_isSelected .MapStopsSidebarVehicleReminder {
+    color: inherit;
+}
+
+.MapStopsSidebarVehicleReminderSpacer {
+    flex: none;
+    width: 22px;
+}
