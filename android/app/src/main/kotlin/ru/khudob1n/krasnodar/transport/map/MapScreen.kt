@@ -520,7 +520,8 @@ fun MapScreen(
         info?.let { panel ->
             Sidepage(
                 onClose = { info = null },
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxHeight(0.88f),
+                modifier = Modifier.align(Alignment.BottomCenter),
+                height = 0.88f,
             ) {
                 when (panel) {
                     InfoPanel.Welcome -> WelcomeCard()
@@ -539,7 +540,8 @@ fun MapScreen(
         if (journeyOpen && selection == null && !settingsOpen && info == null && mapPickField == null) {
             Sidepage(
                 onClose = { journeyOpen = false },
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxHeight(0.62f),
+                modifier = Modifier.align(Alignment.BottomCenter),
+                height = 0.62f,
             ) {
                 JourneyCard(journey, onEditField = { pickerField = it }, note = journeyNote ?: if (locationPickField != null) "Определяем, где вы…" else null)
             }
@@ -598,7 +600,8 @@ fun MapScreen(
         if (settingsOpen) {
             Sidepage(
                 onClose = { settingsOpen = false },
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxHeight(0.88f),
+                modifier = Modifier.align(Alignment.BottomCenter),
+                height = 0.88f,
             ) {
                 SettingsCard(
                     theme = theme,
@@ -616,7 +619,8 @@ fun MapScreen(
         if (current != null) {
             Sidepage(
                 onClose = { selection = null; following = false },
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxHeight(0.62f),
+                modifier = Modifier.align(Alignment.BottomCenter),
+                height = 0.62f,
             ) {
                 when (current) {
                     is MapSelection.Vehicle -> {

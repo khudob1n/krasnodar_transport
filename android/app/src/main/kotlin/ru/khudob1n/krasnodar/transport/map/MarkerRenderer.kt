@@ -42,6 +42,7 @@ fun stopKindOf(types: Set<TransportType>?): StopKind {
  * components/Map/Stops/Item). Размеры в CSS-пикселях сайта, здесь - в dp.
  */
 class MarkerRenderer(private val context: Context) {
+    private companion object { val assetCache = HashMap<String, String>() }
     private val density = context.resources.displayMetrics.density
     private fun dp(value: Float) = value * density
 
@@ -59,8 +60,13 @@ class MarkerRenderer(private val context: Context) {
 
     private val onest: Typeface = ResourcesCompat.getFont(context, R.font.onest) ?: Typeface.DEFAULT
 
+    /** Текст SVG из assets - читаем один раз: маркеры рисуются сотнями. */
+    private fun asset(path: String): String = synchronized(assetCache) {
+        assetCache.getOrPut(path) { context.assets.open(path).bufferedReader().use { it.readText() } }
+    }
+
     private fun svg(path: String, css: String? = null, vars: Map<String, String> = emptyMap()): Pair<SVG, RenderOptions?> {
-        var text = context.assets.open(path).bufferedReader().use { it.readText() }
+        var text = asset(path)
         // AndroidSVG не знает CSS-переменных: подставляем значения темы, как их видит браузер.
         for ((name, value) in vars) text = text.replace("var(--$name)", value)
         return SVG.getFromString(text) to css?.let { RenderOptions().css(it) }
@@ -278,15 +284,25 @@ class MarkerRenderer(private val context: Context) {
             "background-primary" to String.format("#%06X", colors.backgroundPrimary.argb() and 0xFFFFFF),
             name to colors.hex(type),
         )
-        canvas.drawSvg("icons/$name-arrow.svg", rect, vars = vars)
-        if (stale) {
-            // Штриховка поверх фона капли: косые полосы цвета транспорта с прозрачностью 0.35.
-            val circle = Path().apply { addCircle(dp(28f), dp(28f), dp(15f), Path.Direction.CW) }
-            canvas.withClip(circle) {
-                val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = colors.colorInt(type); alpha = 90; strokeWidth = dp(2.3f) }
-                var x = -side
-                while (x < side * 2) { drawLine(x, 0f, x + side, side, paint); x += dp(5.6f) }
-            }
+        if (!stale) {
+            canvas.drawSvg("icons/$name-arrow.svg", rect, vars = vars)
+        } else {
+            // Вся капля по контуру - узор StaleHatchPattern сайта: косые полосы цвета транспорта
+            // (0.35) по фону карточки, непрозрачно - наложенные машины не просвечивают. Период 12
+            // в координатах пути капли (он уменьшен в 0.465 раза) - полосы через ~5.6 dp.
+            val svg = asset("icons/$name-arrow.svg")
+                .replace("var(--$name)", colors.hex(type))
+                .replaceFirst("fill=\"var(--background-primary)\"", "fill=\"url(#hatch)\"")
+                .replaceFirst(
+                    "<g ",
+                    "<defs><pattern id=\"hatch\" width=\"12\" height=\"12\" patternUnits=\"userSpaceOnUse\" patternTransform=\"rotate(45)\">" +
+                        "<rect width=\"12\" height=\"12\" fill=\"${String.format("#%06X", colors.backgroundPrimary.argb() and 0xFFFFFF)}\"/>" +
+                        "<rect width=\"5\" height=\"12\" fill=\"${colors.hex(type)}\" fill-opacity=\"0.35\"/></pattern></defs><g ",
+                )
+            val doc = SVG.getFromString(svg)
+            doc.setDocumentWidth("100%")
+            doc.setDocumentHeight("100%")
+            doc.renderToCanvas(canvas, RenderOptions().viewPort(rect.left, rect.top, rect.width(), rect.height()))
         }
         return bitmap
     }
