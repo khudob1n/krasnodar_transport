@@ -72,6 +72,8 @@ fun PillButton(
     iconTint: androidx.compose.ui.graphics.Color? = null,
     enabled: Boolean = true,
     danger: Boolean = false,
+    active: Boolean = false,
+    trailing: (@Composable () -> Unit)? = null,
 ) {
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
@@ -84,7 +86,8 @@ fun PillButton(
             .alpha(if (enabled) 1f else 0.45f)
             .scale(if (pressed) 0.97f else 1f)
             .heightIn(min = 38.dp)
-            .background(if (pressed) lerp(background, colors.functionalTram, 0.28f) else background, AppTheme.shapes.pill)
+            // Нажата или раскрыла своё (расписание) - подкрашена цветом functional-tram на 28 %.
+            .background(if (pressed || active) lerp(background, colors.functionalTram, 0.28f) else background, AppTheme.shapes.pill)
             .then(if (danger) Modifier else Modifier.border(1.dp, colors.functionalTram.copy(alpha = 0.4f), AppTheme.shapes.pill))
             .clickable(interaction, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(pillPadding()),
@@ -93,6 +96,7 @@ fun PillButton(
     ) {
         if (icon != null) TablerIcon(icon, null, Modifier.size(20.dp), tint = if (danger) content else iconTint ?: colors.textPrimary)
         PillLabel(text, content)
+        trailing?.invoke()
     }
 }
 

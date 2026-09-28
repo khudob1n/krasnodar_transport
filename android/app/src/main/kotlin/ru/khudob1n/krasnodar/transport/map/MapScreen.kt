@@ -287,6 +287,10 @@ fun MapScreen(
                 val target = c.target ?: return@addOnCameraIdleListener
                 scope.launch { preferencesStore.saveLastView(LastView(target.latitude, target.longitude, c.zoom)) }
             }
+            // Карту потянули пальцем - перестаём водить камеру за машиной (иначе они спорят).
+            m.addOnCameraMoveStartedListener { reason ->
+                if (reason == MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE) following = false
+            }
             m.uiSettings.isRotateGesturesEnabled = false
             m.uiSettings.isTiltGesturesEnabled = false
             // Своя атрибуция и логотип - в «Откуда данные»; кнопка MapLibre мешала бы избранному.
@@ -469,10 +473,17 @@ fun MapScreen(
         val points = lineSubroute?.let { catalog?.geometryBySubroute?.get(it)?.points }
         layers?.setRoute(points, lineColor)
     }
-    // «Наблюдать за движением»: камера держит машину в центре при каждом обновлении.
-    LaunchedEffect(following, selectedVehicle?.lat, selectedVehicle?.lng) {
-        val v = selectedVehicle ?: return@LaunchedEffect
-        if (following) map?.animateCamera(CameraUpdateFactory.newLatLng(LatLng(v.lat, v.lng)), 800)
+    // «Наблюдать за движением»: камера подъезжает к машине и дальше едет вместе с ней.
+    val followed = selectedVehicle?.deviceCode?.takeIf { following }
+    LaunchedEffect(layers, followed) {
+        val l = layers ?: return@LaunchedEffect
+        l.follow(null)
+        val id = followed ?: return@LaunchedEffect
+        val p = l.displayedPosition(id) ?: selectedVehicle?.let { LatLngPoint(it.lat, it.lng) } ?: return@LaunchedEffect
+        map?.animateCamera(CameraUpdateFactory.newLatLng(LatLng(p.lat, p.lng)), 800, object : MapLibreMap.CancelableCallback {
+            override fun onFinish() { l.follow(id) }
+            override fun onCancel() {}
+        })
     }
 
     val favoritesState = FavoritesState(favorites) { transform -> scope.launch { favoritesStore.update(transform) } }

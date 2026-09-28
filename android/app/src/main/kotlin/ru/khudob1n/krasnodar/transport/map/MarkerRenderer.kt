@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withClip
-import androidx.core.graphics.withTranslation
 import com.caverock.androidsvg.RenderOptions
 import com.caverock.androidsvg.SVG
 import ru.khudob1n.krasnodar.transport.R
@@ -307,77 +306,114 @@ class MarkerRenderer(private val context: Context) {
         return bitmap
     }
 
+    /** Мелкие картинки для отрисовки машин каждый кадр: SVG разбирать каждый раз слишком долго. */
+    private val parts = HashMap<String, Bitmap>()
+
+    private fun part(key: String, draw: () -> Bitmap): Bitmap = parts.getOrPut(key, draw)
+
+    private fun svgBitmap(path: String, w: Float, h: Float, css: String? = null): Bitmap {
+        val bitmap = createBitmap(w.roundToInt().coerceAtLeast(1), h.roundToInt().coerceAtLeast(1))
+        Canvas(bitmap).drawSvg(path, RectF(0f, 0f, w, h), css)
+        return bitmap
+    }
+
+    private fun transportName(type: TransportType) = when (type) { TransportType.Bus -> "bus"; TransportType.Troll -> "troll"; TransportType.Tram -> "tram" }
+
+    private val badgeRing = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val badgeFill = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val hatchPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+    private val numberPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        typeface = onest
+        fontVariationSettings = "'wght' 500"
+        textSize = dp(21f)
+    }
+    private val scratch = RectF()
+
+    /** Ширина бейджей справа (слева) от капли - для размера картинки и зоны нажатия. */
+    fun badgesWidth(number: String, extra: Boolean): Float =
+        max(dp(42f), numberPaint.measureText(number) + dp(8f)) + if (extra) dp(9f) + dp(24f) else 0f
+
+    /** От центра капли до ближнего края бейджей: left 52 у сайта минус центр 20. */
+    val badgesStart get() = dp(32f)
+
     /**
-     * Пиктограмма транспорта и бейджи (номер, низкий пол или предупреждение). Бейджи справа от
-     * капли, при курсе на восток - слева (EAST_COURSE_RANGE сайта). Картинка симметрична
-     * относительно центра капли, чтобы ставить её с icon-anchor center.
+     * Пиктограмма транспорта и бейджи (номер, низкий пол или предупреждение) вокруг центра
+     * капли (cx, cy). Бейджи справа от капли, при курсе на восток - слева (EAST_COURSE_RANGE сайта).
      */
-    fun body(type: TransportType, number: String, east: Boolean, lowFloor: Boolean, warning: Boolean, stale: Boolean, dark: Boolean): Bitmap {
+    fun drawBody(
+        canvas: Canvas, cx: Float, cy: Float,
+        type: TransportType, number: String, east: Boolean, lowFloor: Boolean, warning: Boolean, stale: Boolean, dark: Boolean,
+    ) {
         val colors = colorsOf(dark)
         val color = colors.colorInt(type)
         val badgeH = dp(24f)
         val ring = dp(2.5f)
         val gap = dp(9f)
-        val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            typeface = onest
-            fontVariationSettings = "'wght' 500"
-            textSize = dp(21f)
-            this.color = color
-        }
-        val numberW = max(dp(42f), textPaint.measureText(number) + dp(8f))
-        val extraW = if (lowFloor || warning) gap + badgeH else 0f
-        val badgesW = numberW + extraW
-        val start = dp(32f) // от центра капли до бейджа: left 52 у сайта минус центр 20
-        val half = start + badgesW + ring + dp(2f)
-        val width = (half * 2).roundToInt()
-        val height = dp(56f).roundToInt()
-        val bitmap = createBitmap(width, height)
-        val canvas = Canvas(bitmap)
-        val cx = half
-        val cy = dp(28f)
 
         // Пиктограмма Temaki 24x27 в центре капли.
         val iconName = when (type) { TransportType.Bus -> "bus"; TransportType.Troll -> "trolleybus"; TransportType.Tram -> "tram" }
-        canvas.drawSvg("temaki/$iconName.svg", RectF(cx - dp(12f), cy - dp(13f), cx + dp(12f), cy + dp(14f)), "path{fill:${colors.hex(type)}}")
+        val icon = part("pict|$iconName|$dark") { svgBitmap("temaki/$iconName.svg", dp(24f), dp(27f), "path{fill:${colors.hex(type)}}") }
+        canvas.drawBitmap(icon, cx - dp(12f), cy - dp(13f), bitmapPaint)
 
         // Бейджи: белые (фон карточки в тёмной теме) со скруглением 8 и кольцом 2.5 цвета транспорта.
         val top = cy - dp(14f)
-        val bg = colors.backgroundPrimary.argb()
+        badgeRing.color = color
+        badgeFill.color = colors.backgroundPrimary.argb()
         fun badge(left: Float, w: Float): RectF {
+            scratch.set(left - ring, top - ring, left + w + ring, top + badgeH + ring)
+            canvas.drawRoundRect(scratch, dp(8f) + ring, dp(8f) + ring, badgeRing)
             val r = RectF(left, top, left + w, top + badgeH)
-            canvas.drawRoundRect(RectF(r.left - ring, r.top - ring, r.right + ring, r.bottom + ring), dp(8f) + ring, dp(8f) + ring, Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color })
-            canvas.drawRoundRect(r, dp(8f), dp(8f), Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = bg })
+            canvas.drawRoundRect(r, dp(8f), dp(8f), badgeFill)
             if (stale) canvas.withClip(r) {
-                val p = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color; alpha = 90; strokeWidth = dp(2.5f) }
+                hatchPaint.color = color
+                hatchPaint.alpha = 90
+                hatchPaint.strokeWidth = dp(2.5f)
                 var x = r.left - badgeH
-                while (x < r.right) { drawLine(x, r.bottom, x + badgeH, r.top, p); x += dp(5.5f) }
+                while (x < r.right) { drawLine(x, r.bottom, x + badgeH, r.top, hatchPaint); x += dp(5.5f) }
             }
             return r
         }
+        val numberW = max(dp(42f), numberPaint.measureText(number) + dp(8f))
+        val extra = lowFloor || warning
+        val badgesW = badgesWidth(number, extra)
         val order = if (east) listOf("extra", "number") else listOf("number", "extra")
-        var x = if (east) cx - start - badgesW else cx + start
+        var x = if (east) cx - badgesStart - badgesW else cx + badgesStart
         for (item in order) {
             if (item == "number") {
                 val r = badge(x, numberW)
-                val fm = textPaint.fontMetrics
+                numberPaint.color = color
+                val fm = numberPaint.fontMetrics
                 val baseline = r.centerY() - (fm.ascent + fm.descent) / 2
-                canvas.drawText(number, r.centerX() - textPaint.measureText(number) / 2, baseline, textPaint)
+                canvas.drawText(number, r.centerX() - numberPaint.measureText(number) / 2, baseline, numberPaint)
                 x += numberW + gap
-            } else if (lowFloor || warning) {
+            } else if (extra) {
                 val r = badge(x, badgeH)
                 if (warning) {
-                    ContextCompat.getDrawable(context, R.drawable.tabler_alert_triangle)?.apply {
-                        setTint(Color.rgb(0xE0, 0x9B, 0x00))
-                        setBounds((r.left + dp(3f)).roundToInt(), (r.top + dp(3f)).roundToInt(), (r.right - dp(3f)).roundToInt(), (r.bottom - dp(3f)).roundToInt())
-                        draw(canvas)
+                    val w = part("warn") {
+                        val side = (badgeH - dp(6f)).roundToInt()
+                        createBitmap(side, side).also { b ->
+                            ContextCompat.getDrawable(context, R.drawable.tabler_alert_triangle)?.apply {
+                                setTint(Color.rgb(0xE0, 0x9B, 0x00)); setBounds(0, 0, side, side); draw(Canvas(b))
+                            }
+                        }
                     }
+                    canvas.drawBitmap(w, r.left + dp(3f), r.top + dp(3f), bitmapPaint)
                 } else {
-                    val name = when (type) { TransportType.Bus -> "bus"; TransportType.Troll -> "troll"; TransportType.Tram -> "tram" }
-                    canvas.withTranslation { drawSvg("icons/$name-accessibility.svg", RectF(r.left + dp(5f), r.top + dp(3f), r.right - dp(5f), r.bottom - dp(3f))) }
+                    val name = transportName(type)
+                    val a = part("access|$name") { svgBitmap("icons/$name-accessibility.svg", badgeH - dp(10f), badgeH - dp(6f)) }
+                    canvas.drawBitmap(a, r.left + dp(5f), r.top + dp(3f), bitmapPaint)
                 }
                 x += badgeH + gap
             }
         }
+    }
+
+    /** То же картинкой, симметричной относительно центра капли (для легенды). */
+    fun body(type: TransportType, number: String, east: Boolean, lowFloor: Boolean, warning: Boolean, stale: Boolean, dark: Boolean): Bitmap {
+        val half = badgesStart + badgesWidth(number, lowFloor || warning) + dp(2.5f) + dp(2f)
+        val bitmap = createBitmap((half * 2).roundToInt(), dp(56f).roundToInt())
+        drawBody(Canvas(bitmap), half, dp(28f), type, number, east, lowFloor, warning, stale, dark)
         return bitmap
     }
 }

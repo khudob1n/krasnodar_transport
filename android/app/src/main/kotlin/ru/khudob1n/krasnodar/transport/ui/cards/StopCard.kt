@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -130,13 +131,16 @@ fun StopCard(
                 button { JourneyPill("A", "Отсюда") { onJourney(true) } }
                 button { JourneyPill("B", "Сюда") { onJourney(false) } }
                 if (!trips.isNullOrEmpty()) button {
-                    PillButton("Расписание", onClick = { scheduleOpened = !scheduleOpened }, icon = R.drawable.tabler_calendar_time)
+                    val turn by androidx.compose.animation.core.animateFloatAsState(if (scheduleOpened) 180f else 0f, label = "arrow")
+                    PillButton("Расписание", onClick = { scheduleOpened = !scheduleOpened }, icon = R.drawable.tabler_calendar_time, active = scheduleOpened) {
+                        TablerIcon(R.drawable.tabler_chevron_down, null, Modifier.size(16.dp).rotate(turn), tint = AppTheme.colors.functional)
+                    }
                 }
                 button { FavoriteButton(favorites.value.hasStop(stop.id), "остановку", { favorites.update { it.toggleStop(stop.id) } }) }
                 button { ShareButton(ShareLinks.stop(stop.id), "Остановка «${stop.name}» на карте транспорта") }
             }
             AnimatedVisibility(scheduleOpened && trips != null) {
-                FullSchedule(trips.orEmpty())
+                StopSchedule(trips.orEmpty())
             }
         }
     }
@@ -153,53 +157,6 @@ private fun Notice(title: String, text: String) {
             Text(title, style = AppTheme.type.body.copy(fontWeight = FontWeight.SemiBold), color = AppTheme.colors.textPrimary)
             Text(text, style = AppTheme.type.small, color = AppTheme.colors.textSecondary)
         }
-    }
-}
-
-/**
- * Полное расписание остановки (MapStopSchedule сайта): переключатель будни / выходные, по
- * каждому маршруту и направлению - часы и минуты отправлений.
- */
-@Composable
-private fun FullSchedule(trips: List<ScheduleTrip>) {
-    var dayType by remember { mutableStateOf(dayTypeOf(cityNow())) }
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            for (type in listOf("будни", "выходные")) {
-                val selected = type == dayType
-                Text(
-                    type.replaceFirstChar { it.uppercase() },
-                    Modifier
-                        .background(
-                            if (selected) AppTheme.colors.textPrimary else AppTheme.colors.backgroundSecondary,
-                            RoundedCornerShape(11.dp),
-                        )
-                        .selectableNoIndication(selected) { dayType = type }
-                        .padding(horizontal = 14.dp, vertical = 8.dp),
-                    style = AppTheme.type.button,
-                    color = if (selected) AppTheme.colors.backgroundPrimary else AppTheme.colors.textPrimary,
-                )
-            }
-        }
-        val groups = trips.filter { it.dayType == dayType }.groupBy { Triple(it.routeNumber, it.routeType, it.toStation) }
-            .toSortedMap(compareBy({ transportOfRu(it.second)?.ordinal ?: 9 }, { it.first.filter(Char::isDigit).toIntOrNull() ?: 0 }, { it.first }, { it.third }))
-        if (groups.isEmpty()) Text("В этот день рейсов нет", style = AppTheme.type.body, color = AppTheme.colors.functional)
-        groups.forEach { (key, list) ->
-            val type = transportOfRu(key.second) ?: return@forEach
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    RouteBadge(key.first, type)
-                    Text("в сторону «${key.third}»", style = AppTheme.type.body, color = AppTheme.colors.textSecondary)
-                }
-                list.map { it.time }.distinct().sorted().groupBy { it.substringBefore(':') }.forEach { (hour, times) ->
-                    Row {
-                        Text(hour, Modifier.width(32.dp), style = AppTheme.type.mono.copy(fontWeight = FontWeight.Bold, fontSize = 15.sp), color = AppTheme.colors.textPrimary)
-                        Text(times.joinToString("  ") { it.substringAfter(':') }, style = AppTheme.type.mono.copy(fontSize = 15.sp), color = AppTheme.colors.textSecondary)
-                    }
-                }
-            }
-        }
-        Spacer(Modifier.size(8.dp))
     }
 }
 

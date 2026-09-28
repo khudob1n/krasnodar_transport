@@ -1,7 +1,5 @@
 package ru.khudob1n.krasnodar.transport.map
 
-import android.animation.ValueAnimator
-import android.view.animation.LinearInterpolator
 import android.graphics.RectF
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.style.layers.FillLayer
@@ -25,8 +23,6 @@ import org.maplibre.android.style.layers.PropertyFactory.iconAnchor
 import org.maplibre.android.style.layers.PropertyFactory.iconOffset
 import org.maplibre.android.style.layers.PropertyFactory.iconIgnorePlacement
 import org.maplibre.android.style.layers.PropertyFactory.iconImage
-import org.maplibre.android.style.layers.PropertyFactory.iconRotate
-import org.maplibre.android.style.layers.PropertyFactory.iconRotationAlignment
 import org.maplibre.android.style.layers.Property
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
@@ -65,7 +61,6 @@ sealed interface MapSelection {
 private const val STOPS_MIN_ZOOM = 12.0
 private const val LABELS_MIN_ZOOM = 15.0
 private val STALE_AFTER: Duration = Duration.ofMinutes(5)
-private const val MOVE_DURATION_MS = 1000L
 /** Отступ подписи от центра значка остановки или вокзала при размере 100 %. */
 private const val LABEL_OFFSET = 13f
 
@@ -103,24 +98,9 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
     private var catalog: Catalog? = null
     private var vehicles: List<Vehicle> = emptyList()
 
-    // Плавное движение: новое положение машины не ставится сразу, а машина за секунду едет к
-    // нему от прежнего (moveToWithDuration на сайте), капля так же плавно поворачивается.
-    private var from: Map<String, Vehicle> = emptyMap()
-    private var progress = 1f
-    private var lastPush = 0L
-    private val animator = ValueAnimator.ofFloat(0f, 1f).apply {
-        duration = MOVE_DURATION_MS
-        interpolator = LinearInterpolator()
-        addUpdateListener {
-            progress = it.animatedValue as Float
-            // Не чаще 20 раз в секунду (и последний кадр всегда): пересчёт сотен машин каждый кадр
-            // занимал главный поток, и жесты (шторка, карта) приходили рывками.
-            val now = android.os.SystemClock.uptimeMillis()
-            if (progress >= 1f || now - lastPush >= 50) {
-                lastPush = now
-                pushVehicles()
-            }
-        }
+    /** Машины - своим слоем поверх карты (см. VehicleOverlay). */
+    private val overlay = VehicleOverlay(mapView.context, map, renderer).also {
+        mapView.addView(it, android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT))
     }
     private var dark = false
     private var stopRate = -1
@@ -152,17 +132,17 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
             onPickPoint?.let { pick -> pick(LatLngPoint(latLng.latitude, latLng.longitude)); return@addOnMapClickListener true }
             val p = map.projection.toScreenLocation(latLng)
             val r = 14f * mapView.resources.displayMetrics.density
+            // Машина важнее остановки под ней (машины нарисованы выше).
+            val vehicle = overlay.vehicleAt(p.x, p.y)
             val features = map.queryRenderedFeatures(
                 RectF(p.x - r, p.y - r, p.x + r, p.y + r),
-                VEHICLES_LAYER, STATIONS_LAYER, STATION_LABELS_LAYER, STOPS_LAYER, STOP_LABELS_LAYER,
+                STATIONS_LAYER, STATION_LABELS_LAYER, STOPS_LAYER, STOP_LABELS_LAYER,
             )
-            // Машина важнее остановки под ней (слои машин выше).
-            val vehicle = features.firstOrNull { it.getStringProperty("kind") == "vehicle" }
             val stop = features.firstOrNull { it.getStringProperty("kind") == "stop" }
             val station = features.firstOrNull { it.getStringProperty("kind") == "station" }
             onSelect?.invoke(
                 when {
-                    vehicle != null -> MapSelection.Vehicle(vehicle.getStringProperty("id"))
+                    vehicle != null -> MapSelection.Vehicle(vehicle)
                     station != null -> MapSelection.Station(station.getStringProperty("id"))
                     stop != null -> MapSelection.Stop(stop.getStringProperty("id").toLong())
                     else -> null
@@ -186,6 +166,7 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
     /** Вызывается после каждой загрузки стиля (в т.ч. смены темы). */
     fun install(style: Style, dark: Boolean) {
         this.dark = dark
+        overlay.dark = dark
         // Депо - полигоны цвета своего вида транспорта (MapDepots сайта), в самом низу.
         style.addSource(GeoJsonSource(DEPOTS))
         style.addLayer(FillLayer(DEPOTS_FILL_LAYER, DEPOTS).withProperties(fillColor(toColor(get("color"))), fillOpacity(0.14f)))
@@ -216,7 +197,6 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
             ).also { it.setFilter(org.maplibre.android.style.expressions.Expression.eq(get("walk"), false)) },
         )
         style.addSource(GeoJsonSource(STOPS))
-        style.addSource(GeoJsonSource(VEHICLES))
         style.addLayer(
             SymbolLayer(STOPS_LAYER, STOPS).withProperties(
                 iconImage(get("image")), iconAllowOverlap(true), iconIgnorePlacement(true),
@@ -248,14 +228,6 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
                 iconAllowOverlap(true), iconIgnorePlacement(true),
             ),
         )
-        // Машины: капля и бейджи каждой - соседние в порядке отрисовки (см. vehicleFeatures).
-        style.addLayer(
-            SymbolLayer(VEHICLES_LAYER, VEHICLES).withProperties(
-                iconImage(get("image")), iconAllowOverlap(true), iconIgnorePlacement(true),
-                iconRotate(get("rotate")), iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP),
-                org.maplibre.android.style.layers.PropertyFactory.symbolSortKey(get("order")),
-            ),
-        )
         style.addSource(GeoJsonSource(JOURNEY_POINTS))
         style.addLayer(SymbolLayer(JOURNEY_POINTS_LAYER, JOURNEY_POINTS).withProperties(iconImage(get("image")), iconAllowOverlap(true), iconIgnorePlacement(true)))
         stopRate = -1
@@ -285,7 +257,7 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
         style.getLayer(STOPS_LAYER)?.setProperties(iconSize(sizes.all * sizes.stops))
         style.getLayer(STOP_LABELS_LAYER)?.setProperties(show(p.labels), iconOffset(arrayOf(LABEL_OFFSET * sizes.all * sizes.stops, 0f)))
         val vehicleSize = sizes.all * sizes.vehicles
-        style.getLayer(VEHICLES_LAYER)?.setProperties(iconSize(vehicleSize))
+        overlay.scale = vehicleSize
         for (id in SIMPLE_HIDDEN_LAYERS) style.getLayer(id)?.setProperties(show(p.basemap == Basemap.Default))
         // Масштаб вокзалов зависит от вида - он в свойстве "scale" каждой точки.
         pushStatic()
@@ -395,17 +367,8 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
 
     fun setVehicles(vehicles: List<Vehicle>) {
         onMain {
-            // Откуда ехать - там, где машина нарисована сейчас (анимация могла не закончиться).
-            from = this.vehicles.associate { v -> v.deviceCode to interpolated(v) }
             this.vehicles = vehicles
-            if (animationsEnabled && from.isNotEmpty()) {
-                progress = 0f
-                animator.cancel()
-                animator.start()
-            } else {
-                progress = 1f
-                pushVehicles()
-            }
+            pushVehicles()
         }
     }
 
@@ -418,23 +381,19 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
         set(value) { if (field != value) { field = value; onMain { pushVehicles() } } }
 
     /** «Уменьшить движение» в настройках: машины переставляются без анимации. */
-    var animationsEnabled = true
+    var animationsEnabled: Boolean
+        get() = overlay.animate
+        set(value) { overlay.animate = value }
 
-    private fun interpolated(v: Vehicle): Vehicle {
-        val old = from[v.deviceCode] ?: return v
-        if (progress >= 1f) return v
-        val t = progress.toDouble()
-        return v.copy(
-            lat = old.lat + (v.lat - old.lat) * t,
-            lng = old.lng + (v.lng - old.lng) * t,
-            dir = old.dir + (((v.dir - old.dir + 540) % 360) - 180) * t,
-        )
-    }
+    /** «Наблюдать за движением»: камера держит эту машину в центре, пока та едет. */
+    fun follow(deviceCode: String?) = onMain { overlay.follow = deviceCode }
+
+    /** Где машина нарисована сейчас (она едет к последним координатам плавно). */
+    fun displayedPosition(deviceCode: String): LatLngPoint? = overlay.position(deviceCode)
 
     private fun pushVehicles() {
-        val style = map.style ?: return
-        if (!style.isFullyLoaded || vehicleRate < 0) return
-        style.getSourceAs<GeoJsonSource>(VEHICLES)?.setGeoJson(vehicleFeatures(vehicleRate))
+        if (vehicleRate < 0) return
+        overlay.setMarks(vehicleMarks(vehicleRate))
     }
 
     private fun onZoom() {
@@ -449,7 +408,7 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
         val vRate = vehicleSampleRate(zoom)
         if (vRate != vehicleRate) {
             vehicleRate = vRate
-            style.getSourceAs<GeoJsonSource>(VEHICLES)?.setGeoJson(vehicleFeatures(vRate))
+            pushVehicles()
         }
     }
 
@@ -469,21 +428,11 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
         return FeatureCollection.fromFeatures(features)
     }
 
-    private fun vehicleFeatures(rate: Int): FeatureCollection {
+    private fun vehicleMarks(rate: Int): List<VehicleMark> {
         val catalog = catalog
         val now = Instant.now()
         val filter = vehicleFilter
-        // Южнее - ближе к зрителю и рисуется позже; у каждой машины капля и бейджи - две соседние
-        // точки в одном слое (порядок 2i и 2i+1), поэтому машина целиком ложится поверх
-        // предыдущей и не просвечивает. Картинки - по одной на вид капли и на набор бейджей.
-        val features = vehicles.map(::interpolated).sortedByDescending { it.lat }.flatMapIndexed { i, v ->
-            vehicleFeaturePair(v, i, catalog, now, filter, rate)
-        }
-        return FeatureCollection.fromFeatures(features)
-    }
-
-    private fun vehicleFeaturePair(v: Vehicle, i: Int, catalog: Catalog?, now: Instant, filter: Set<Pair<Long, Long>>?, rate: Int): List<Feature> {
-        val features = listOf(v).mapNotNull { v ->
+        return vehicles.mapNotNull { v ->
             val type = v.transport ?: return@mapNotNull null
             if (!preferences.showsType(type)) return@mapNotNull null
             if (preferences.lowFloorOnly && !v.lowFloor) return@mapNotNull null
@@ -494,31 +443,8 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
             if (stale && !preferences.showStale) return@mapNotNull null
             // Направления машины нет в справочнике - она не на линии маршрута (warning на сайте).
             val warning = catalog != null && catalog.routeStopsById[v.routeId]?.directions?.none { it.subrouteId == v.subrouteId } ?: true
-            val course = ((v.dir % 360) + 360) % 360
-            val east = course > 45 && course < 135
-            val d = if (dark) 1 else 0
-            val point = Point.fromLngLat(v.lng, v.lat)
-            listOf(
-                Feature.fromGeometry(point).apply {
-                    addStringProperty("id", v.deviceCode)
-                    addStringProperty("kind", "vehicle")
-                    addNumberProperty("order", i * 2)
-                    addNumberProperty("rotate", course)
-                    addStringProperty("image", "arrow|${type.name}|${if (stale) 1 else 0}|$d")
-                },
-                Feature.fromGeometry(point).apply {
-                    addStringProperty("id", v.deviceCode)
-                    addStringProperty("kind", "vehicle")
-                    addNumberProperty("order", i * 2 + 1)
-                    addNumberProperty("rotate", 0)
-                    addStringProperty(
-                        "image",
-                        "body|${type.name}|${v.routeNumber}|${if (east) 1 else 0}|${if (v.lowFloor) 1 else 0}|${if (warning) 1 else 0}|${if (stale) 1 else 0}|$d",
-                    )
-                },
-            )
+            VehicleMark(v, type, stale, warning)
         }
-        return features.flatten()
     }
 
     private fun imageFor(id: String) = runCatching {
@@ -530,11 +456,6 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
             "station" -> renderer.station(p[1], p[2] == "1")
             "label" -> renderer.label(id.substringAfter('|').substringAfter('|'), p[1] == "1")
             "stop" -> renderer.stop(StopKind.entries.first { it.id == p[1] }, p[2] == "1")
-            "arrow" -> renderer.arrow(TransportType.valueOf(p[1]), p[2] == "1", p[3] == "1")
-            "body" -> renderer.body(
-                TransportType.valueOf(p[1]), p[2], east = p[3] == "1", lowFloor = p[4] == "1",
-                warning = p[5] == "1", stale = p[6] == "1", dark = p[7] == "1",
-            )
             else -> null
         }
     }.getOrNull()
@@ -558,9 +479,7 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
         const val ROUTE = "selected-route"
         const val ROUTE_LAYER = "selected-route-line"
         const val STOPS = "stops"
-        const val VEHICLES = "vehicles"
         const val STOPS_LAYER = "stops-icons"
         const val STOP_LABELS_LAYER = "stops-labels"
-        const val VEHICLES_LAYER = "vehicles-markers"
     }
 }
