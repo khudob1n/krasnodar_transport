@@ -13,17 +13,11 @@ import org.maplibre.android.maps.MapLibreMap
 import ru.khudob1n.krasnodar.transport.data.LatLngPoint
 import ru.khudob1n.krasnodar.transport.data.Vehicle
 import ru.khudob1n.krasnodar.transport.ui.components.TransportType
-import java.time.Duration
-import java.time.Instant
 import kotlin.math.hypot
 
 /** Машина, как её рисовать: stale - координаты устарели, warning - не на линии своего маршрута. */
 data class VehicleMark(val vehicle: Vehicle, val type: TransportType, val stale: Boolean, val warning: Boolean)
 
-/** Сколько машина едет к новому положению: столько, сколько прошло между отметками (раз в ~25 с). */
-private const val DEFAULT_MOVE_MS = 5_000L
-private const val MIN_MOVE_MS = 1_000L
-private const val MAX_MOVE_MS = 40_000L
 /** Кадров в секунду, пока машины едут: они ползут медленно, 30 хватает, а батарею бережёт. */
 private const val FRAME_MS = 33L
 
@@ -32,21 +26,11 @@ private const val FRAME_MS = 33L
  * целиком - капля, пиктограмма и бейджи, южнее - поверх. В слое MapLibre так не выходит: там
  * порядок держится только внутри тайла, и бейджи одних машин ложились на капли других.
  *
- * Движение плавное: получив новое положение, машина не прыгает, а едет к нему от того места,
- * где нарисована, столько времени, сколько прошло между её отметками, - к следующей отметке
- * как раз доезжает (moveToWithDuration сайта; скорости источник Краснодара не отдаёт).
+ * Движение плавное, по линии маршрута - см. VehicleMotion.
  */
 @SuppressLint("ViewConstructor")
 class VehicleOverlay(context: Context, private val map: MapLibreMap, private val renderer: MarkerRenderer) : View(context) {
-    private class Track(
-        val fromLat: Double, val fromLng: Double, val fromDir: Double,
-        var mark: VehicleMark, val start: Long, val duration: Long,
-    ) {
-        fun progress(now: Long) = if (duration <= 0) 1.0 else ((now - start).toDouble() / duration).coerceIn(0.0, 1.0)
-        fun lat(t: Double) = fromLat + (mark.vehicle.lat - fromLat) * t
-        fun lng(t: Double) = fromLng + (mark.vehicle.lng - fromLng) * t
-        fun dir(t: Double) = fromDir + (((mark.vehicle.dir - fromDir + 540) % 360) - 180) * t
-    }
+    private class Track(var mark: VehicleMark, val motion: VehicleMotion)
 
     /** Нарисованная в последнем кадре машина - для нажатий. */
     private class Drawn(val id: String, val x: Float, val y: Float, val left: Float, val right: Float)
@@ -81,6 +65,9 @@ class VehicleOverlay(context: Context, private val map: MapLibreMap, private val
         map.addOnCameraIdleListener { invalidate() }
     }
 
+    /** Линия маршрута по направлению (subrouteId) - по ней машины и едут. */
+    var lineOf: (Long) -> RouteLine? = { null }
+
     fun setMarks(marks: List<VehicleMark>) {
         val now = SystemClock.uptimeMillis()
         val next = LinkedHashMap<String, Track>(marks.size)
@@ -88,13 +75,15 @@ class VehicleOverlay(context: Context, private val map: MapLibreMap, private val
             val v = m.vehicle
             val old = tracks[v.deviceCode]
             next[v.deviceCode] = when {
-                old == null -> Track(v.lat, v.lng, v.dir, m, now, 0)
-                // Положение то же (опрос чаще, чем машина отмечается) - едет дальше как ехала.
-                old.mark.vehicle.lat == v.lat && old.mark.vehicle.lng == v.lng && old.mark.vehicle.dir == v.dir -> old.also { it.mark = m }
-                else -> {
-                    val t = old.progress(now)
-                    val duration = if (animate) moveDuration(old.mark.vehicle.navTime, v.navTime) else 0L
-                    Track(old.lat(t), old.lng(t), old.dir(t), m, now, duration)
+                old == null -> Track(m, VehicleMotion(lineOf(v.subrouteId), v.lat, v.lng, v.dir, now))
+                else -> old.also { track ->
+                    val was = track.mark.vehicle
+                    track.mark = m
+                    val changed = was.lat != v.lat || was.lng != v.lng || was.dir != v.dir || was.subrouteId != v.subrouteId
+                    if (changed) {
+                        if (animate) track.motion.fix(v.lat, v.lng, v.dir, now, lineOf(v.subrouteId))
+                        else track.motion.jump(v.lat, v.lng, v.dir)
+                    }
                 }
             }
         }
@@ -102,17 +91,8 @@ class VehicleOverlay(context: Context, private val map: MapLibreMap, private val
         invalidate()
     }
 
-    private fun moveDuration(from: String?, to: String?): Long {
-        val ms = runCatching { Duration.between(Instant.parse(from), Instant.parse(to)).toMillis() }.getOrNull()
-        return (ms?.takeIf { it > 0 } ?: DEFAULT_MOVE_MS).coerceIn(MIN_MOVE_MS, MAX_MOVE_MS)
-    }
-
     /** Где машина нарисована сейчас. */
-    fun position(id: String): LatLngPoint? {
-        val track = tracks[id] ?: return null
-        val t = track.progress(SystemClock.uptimeMillis())
-        return LatLngPoint(track.lat(t), track.lng(t))
-    }
+    fun position(id: String): LatLngPoint? = tracks[id]?.motion?.let { LatLngPoint(it.lat, it.lng) }
 
     /** Машина под точкой экрана (верхняя - южнее), или null. */
     fun vehicleAt(x: Float, y: Float): String? {
@@ -132,19 +112,17 @@ class VehicleOverlay(context: Context, private val map: MapLibreMap, private val
         val margin = 200f * density * scale
         var moving = false
         // Севернее - раньше, южнее - поверх (z-index по широте у Leaflet).
-        val items = tracks.values.map { track ->
-            val t = track.progress(now)
-            if (t < 1.0) moving = true
-            Triple(track, t, track.lat(t))
-        }.sortedByDescending { it.third }
+        val items = tracks.values.onEach { it.motion.advance(now); if (it.motion.moving) moving = true }
+            .sortedByDescending { it.motion.lat }
         val out = ArrayList<Drawn>(items.size)
         val start = renderer.badgesStart
-        for ((track, t, lat) in items) {
-            val p = projection.toScreenLocation(LatLng(lat, track.lng(t)))
+        for (track in items) {
+            val motion = track.motion
+            val p = projection.toScreenLocation(LatLng(motion.lat, motion.lng))
             if (p.x < -margin || p.y < -margin || p.x > width + margin || p.y > height + margin) continue
             val m = track.mark
             val v = m.vehicle
-            val course = ((track.dir(t) % 360) + 360) % 360
+            val course = ((motion.dir % 360) + 360) % 360
             val east = course > 45 && course < 135
             canvas.save()
             canvas.translate(p.x, p.y)

@@ -356,9 +356,13 @@ class MapLayers(private val mapView: MapView, private val map: MapLibreMap, priv
         style.getSourceAs<GeoJsonSource>(JOURNEY_POINTS)?.setGeoJson(FeatureCollection.fromFeatures(points))
     }
 
+    private val lines = HashMap<Long, RouteLine?>()
+
     fun setCatalog(catalog: Catalog?) {
         onMain {
             this.catalog = catalog
+            lines.clear()
+            overlay.lineOf = { id -> lines.getOrPut(id) { catalog?.geometryBySubroute?.get(id)?.points?.takeIf { it.size >= 2 }?.let(::RouteLine) } }
             stopRate = -1
             onZoom()
             pushStatic()
