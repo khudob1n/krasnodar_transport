@@ -27,3 +27,8 @@ android/release/
 .idea/
 *.iml
 .claude/
+
+# iOS: проект Xcode собирается из ios/project.yml (xcodegen generate)
+ios/build/
+ios/build.log
+ios/*.xcodeproj/
