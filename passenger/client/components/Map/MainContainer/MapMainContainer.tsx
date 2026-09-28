@@ -29,6 +29,7 @@ import { MapJourneyControl } from 'components/Map/Journey/MapJourneyControl';
 import { MapJourneyLayer } from 'components/Map/Journey/MapJourneyLayer';
 
 import { MapLabelCollisions } from 'components/Map/MapLabelCollisions';
+import { MapButtonsToggle } from 'components/Map/ButtonsToggle/MapButtonsToggle';
 
 import { MapVectorBasemap } from './MapVectorBasemap';
 import styles from './MapMainContainer.module.css';
@@ -80,6 +81,8 @@ function RememberView() {
 
 function MapMainContainer({ zoom = 16, showControls = true }) {
     const [sidebar, setSidebar] = useState<React.ReactElement>(null);
+    // Столбик кнопок справа на телефоне - раскрыт, пока его не свернули шевроном.
+    const [buttonsOpened, setButtonsOpened] = useState(true);
     // Стартовая точка (TASK-199). Карта грузится только на клиенте (dynamic, ssr: false),
     // поэтому настройки читаем прямо при первом рендере - MapContainer берёт center/zoom
     // один раз при создании.
@@ -154,10 +157,23 @@ function MapMainContainer({ zoom = 16, showControls = true }) {
                     >
                         <MapTraffic />
                         <MapWeather />
-                        <Info />
-                        <MapNearby />
-                        <MapSettings />
-                        <ThemeToggle />
+                        {/* На компьютере - в том же ряду; на телефоне - столбиком под шевроном. */}
+                        <div
+                            id="map-buttons"
+                            className={cn(styles.MapButtonsGroup, {
+                                [styles.MapButtonsGroup_collapsed]: !buttonsOpened,
+                            })}
+                        >
+                            <Info />
+                            <MapNearby />
+                            <MapSettings />
+                            <ThemeToggle />
+                        </div>
+                        <MapButtonsToggle
+                            opened={buttonsOpened}
+                            onToggle={() => setButtonsOpened((value) => !value)}
+                            controls="map-buttons"
+                        />
                     </div>
                     {/* Пока открыта карточка, панель избранного спрятана - иначе на телефоне
                         они перекрывали бы друг друга. */}

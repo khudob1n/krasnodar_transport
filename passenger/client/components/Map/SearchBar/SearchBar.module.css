@@ -1,7 +1,6 @@
 .MapSearchBar {
     --search-border-width: 4px;
     --search-border-color: rgba(230, 228, 224, 0.64);
-    --search-mobile-mini-width: 116px;
     --search-inner-border-radius: 16px;
     --search-outer-border-radius: calc(var(--search-inner-border-radius) + var(--search-border-width));
 
@@ -182,35 +181,37 @@
     }
 }
 
+/* Телефон: поиск внизу во всю ширину - до него удобно дотянуться большим пальцем. Выдача
+   раскрывается вверх, над полем. Открытая карточка (Sidepage) ложится поверх поиска. */
 @media screen and (max-width: 768px) {
     .MapSearchBar {
-        /* Свёрнутый поиск на телефоне занимает всё место до кнопок справа (4 × 48px, зазоры
-           8px, отступ 16px - MapMainContainer.module.css), а не узкие 116px: так в него удобно
-           попасть пальцем и видно подсказку. */
-        --search-mobile-mini-width: clamp(116px, calc(100vw - 276px), 400px);
-        width: calc(var(--search-mobile-mini-width) + 2 * var(--search-border-width));
+        position: fixed;
+        left: 8px;
+        right: 8px;
+        bottom: calc(8px + env(safe-area-inset-bottom));
+        flex-direction: column-reverse;
         max-width: none;
+        max-height: calc(60vh - 40px);
 
         border-color: transparent;
-        border-radius: 40px;
-    }
-
-    .MapSearchBar:focus-within,
-    .MapSearchBar_withText {
-        width: 100%;
-        border-radius: var(--search-outer-border-radius);
-        border-color: var(--search-border-color);
     }
 
     .MapSearchBar__form {
-        width: var(--search-mobile-mini-width);
-        border-radius: 40px;
+        flex: none;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     }
 
-    .MapSearchBar__form:focus-within,
-    .MapSearchBar_withText > .MapSearchBar__form {
-        border-radius: var(--search-inner-border-radius);
-        width: 100%;
+    .MapSearchBar_withText > .MapSearchBar__form,
+    .MapSearchBar__form:focus-within {
+        box-shadow: none;
+    }
+
+    .MapSearchBar__form_withResult {
+        border-radius: 0 0 16px 16px;
+    }
+
+    .MapSearchBar__results {
+        border-radius: 16px 16px 0 0;
     }
 
     .MapSearchBar__input {
@@ -227,16 +228,7 @@
     }
 }
 
-/* Узкий телефон: кнопки справа здесь 44px с отступом 12px (MapMainContainer.module.css) -
-   свёрнутый поиск той же высоты и на той же линии. Отступ до края набирается из padding
-   сайдбара (8px здесь) и прозрачной рамки поиска (4px). Слово «Поиск» при прежней ширине
-   упиралось в правый край - поле шире, а отступы текста меньше. */
 @media screen and (max-width: 400px) {
-    /* Здесь кнопки 44px с зазором 6px и отступом 12px. */
-    .MapSearchBar {
-        --search-mobile-mini-width: max(120px, calc(100vw - 242px));
-    }
-
     .MapSearchBar__form {
         height: 44px;
     }
@@ -247,21 +239,6 @@
 
     .MapSearchBar__input {
         padding: 10px 12px 10px 46px;
-    }
-}
-
-/* Совсем узкий экран: кнопки справа 40px, зазор 4px, отступ 8px. */
-@media screen and (max-width: 349px) {
-    .MapSearchBar {
-        --search-mobile-mini-width: max(104px, calc(100vw - 212px));
-    }
-
-    .MapSearchBar__form {
-        height: 40px;
-    }
-
-    .MapSearchBar__input {
-        padding: 8px 12px 8px 46px;
     }
 }
 

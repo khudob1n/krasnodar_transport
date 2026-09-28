@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -79,6 +80,7 @@ fun FavoritesPanel(
     onStopClick: (Stop) -> Unit,
     onRouteClick: (RouteStops) -> Unit,
     modifier: Modifier = Modifier,
+    atTop: Boolean = false,
 ) {
     val colors = AppTheme.colors
     val favorites = LocalFavorites.current.value
@@ -113,7 +115,8 @@ fun FavoritesPanel(
         ) {
             TablerIcon(R.drawable.tabler_star_filled, null, Modifier.size(16.dp), tint = colors.tram)
             Text("Избранное", Modifier.weight(1f), style = AppTheme.type.small.copy(fontWeight = FontWeight.SemiBold, lineHeight = 16.sp), color = colors.textSecondary)
-            TablerIcon(R.drawable.tabler_chevron_down, null, Modifier.size(18.dp), tint = colors.functional)
+            // Сворачивается туда, откуда раскрылась: вниз - к звёздочке внизу, вверх - к звёздочке сверху.
+            TablerIcon(R.drawable.tabler_chevron_down, null, Modifier.size(18.dp).rotate(if (atTop) 180f else 0f), tint = colors.functional)
         }
         Column(Modifier.verticalScroll(rememberScrollState()).padding(start = 6.dp, end = 6.dp, bottom = 6.dp)) {
             if (favorites.isEmpty) {

@@ -39,35 +39,58 @@
     gap: 8px;
 }
 
-/* Четыре кнопки по 48px с прежними отступами на узком телефоне налезали на свёрнутый поиск
-   (его правый край - 136px от левого края экрана): на 360px - на 8px, на 320px - на 48px.
-   Ужимаем кнопки и зазоры так, чтобы между ними и поиском оставалось место. */
+/* Инфо, «Рядом», настройки, тема. На компьютере - просто продолжение ряда. */
+.MapButtonsGroup {
+    display: contents;
+}
+
+/* Телефон: поиск внизу, под пальцем (SearchBar.module.css). Сверху слева - избранное, справа -
+   пробки, погода и шеврон, под которым столбиком прячутся четыре кнопки. */
+@media screen and (max-width: 768px) {
+    .MapButtonsGroup {
+        position: absolute;
+        top: calc(16px + 48px + 12px);
+        right: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .MapButtonsGroup_collapsed {
+        display: none;
+    }
+
+    /* Масштаб, маршрут и «где я» - над поиском внизу. */
+    .Map :global(.leaflet-bottom.leaflet-right) {
+        bottom: calc(64px + env(safe-area-inset-bottom));
+    }
+
+    /* Избранное - в левом верхнем углу, на одной линии с кнопками справа. */
+    .MapBottomLeft.MapBottomLeft {
+        top: 16px;
+        bottom: auto;
+    }
+}
+
 @media screen and (max-width: 400px) {
     .MapAdditionalButtons {
         padding: 12px;
         gap: 6px;
     }
 
-    /* Поиск на одной линии с кнопками: 8px + 4px его прозрачной рамки = 12px, как у кнопок. */
-    .MapSidebar {
-        padding: 8px;
+    .MapButtonsGroup {
+        top: calc(12px + 44px + 10px);
+        right: 12px;
+        gap: 10px;
     }
 
-    .MapAdditionalButtons > button {
+    .MapAdditionalButtons button {
         width: 44px;
         height: 44px;
     }
-}
 
-@media screen and (max-width: 349px) {
-    .MapAdditionalButtons {
-        padding: 12px 8px;
-        gap: 4px;
-    }
-
-    .MapAdditionalButtons > button {
-        width: 40px;
-        height: 40px;
+    .MapBottomLeft.MapBottomLeft {
+        top: 12px;
     }
 }
 

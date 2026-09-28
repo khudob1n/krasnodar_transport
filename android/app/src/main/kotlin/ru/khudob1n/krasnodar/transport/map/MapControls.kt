@@ -56,8 +56,10 @@ class MapControlActions(
 )
 
 /**
- * Кнопки поверх карты: сверху поиск, пробки с погодой и кнопки инфо, «Рядом», настройки, тема
- * (на телефоне - сворачиваемым столбиком справа), справа внизу маршрут, масштаб и «где я», слева внизу избранное.
+ * Кнопки поверх карты. Шире 768 dp - как на сайте: сверху поиск, пробки с погодой и кнопки
+ * инфо, «Рядом», настройки, тема; справа внизу маршрут, масштаб и «где я», слева внизу избранное.
+ * На телефоне поиск внизу, под пальцем, а сверху избранное, пробки с погодой и шеврон, под
+ * которым столбиком прячутся инфо, «Рядом», настройки и тема.
  */
 @Composable
 fun MapControls(
@@ -70,7 +72,6 @@ fun MapControls(
     favoritesButton: Boolean = true,
     badges: @Composable (compact: Boolean) -> Unit = {},
 ) {
-    val colors = AppTheme.colors
     // Шире 768 dp - ряд как на сайте: поиск, плашки пробок и погоды, четыре кнопки. На телефоне
     // сайт плашки прячет; приложение ставит в ряд одну компактную плашку и кнопку-шеврон, а четыре
     // кнопки - столбиком под ней, его можно свернуть, чтобы не закрывал карту.
@@ -78,11 +79,15 @@ fun MapControls(
     var expanded by rememberSaveable { mutableStateOf(true) }
     Box(modifier.fillMaxSize().safeDrawingPadding().padding(16.dp)) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            SearchPill(searchHint, actions.onSearch, Modifier.weight(1f))
-            badges(!wide)
             if (wide) {
+                SearchPill(searchHint, actions.onSearch, Modifier.weight(1f))
+                badges(false)
                 TopButtons(actions, nearbyOpened, settingsOpened, infoOpened)
             } else {
+                // Открытая панель избранного встаёт на место звёздочки.
+                if (favoritesButton) FavoritesButton(actions.onFavorites)
+                badges(true)
+                Box(Modifier.weight(1f))
                 val rotation by animateFloatAsState(if (expanded) 180f else 0f, label = "chevron")
                 MapButton(
                     R.drawable.tabler_chevron_down,
@@ -104,24 +109,36 @@ fun MapControls(
             }
         }
 
-        Column(Modifier.align(Alignment.BottomEnd), verticalArrangement = Arrangement.spacedBy(12.dp), horizontalAlignment = Alignment.End) {
+        Column(
+            Modifier.align(Alignment.BottomEnd).padding(bottom = if (wide) 0.dp else 60.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.End,
+        ) {
             MapButton(R.drawable.tabler_route, "Маршрут", actions.onJourney)
             ZoomGroup(actions.onZoomIn, actions.onZoomOut)
             MapButton(R.drawable.tabler_map_pin, "Показать моё местоположение", actions.onLocate)
         }
 
-        // Открытая панель избранного встаёт на место звёздочки.
-        if (favoritesButton) Box(
-            Modifier
-                .align(Alignment.BottomStart)
-                .size(48.dp)
-                .shadow(6.dp, AppTheme.shapes.mapButton)
-                .background(colors.backgroundPrimary, AppTheme.shapes.mapButton)
-                .clickable(role = Role.Button, onClick = actions.onFavorites),
-            contentAlignment = Alignment.Center,
-        ) {
-            TablerIcon(R.drawable.tabler_star_filled, "Избранное", tint = colors.favorite)
+        if (wide) {
+            if (favoritesButton) FavoritesButton(actions.onFavorites, Modifier.align(Alignment.BottomStart))
+        } else {
+            SearchPill(searchHint, actions.onSearch, Modifier.align(Alignment.BottomStart).fillMaxWidth())
         }
+    }
+}
+
+@Composable
+private fun FavoritesButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val colors = AppTheme.colors
+    Box(
+        modifier
+            .size(48.dp)
+            .shadow(6.dp, AppTheme.shapes.mapButton)
+            .background(colors.backgroundPrimary, AppTheme.shapes.mapButton)
+            .clickable(role = Role.Button, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        TablerIcon(R.drawable.tabler_star_filled, "Избранное", tint = colors.favorite)
     }
 }
 

@@ -486,6 +486,7 @@ fun MapScreen(
         })
     }
 
+    val wideScreen = androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp > 768
     val favoritesState = FavoritesState(favorites) { transform -> scope.launch { favoritesStore.update(transform) } }
     CompositionLocalProvider(LocalMapPreferences provides preferences, LocalFavorites provides favoritesState) {
     Box(modifier.fillMaxSize()) {
@@ -605,7 +606,9 @@ fun MapScreen(
                 onClose = { favoritesOpen = false },
                 onStopClick = { stop -> selection = MapSelection.Stop(stop.id); flyTo(stop.lat, stop.lng, 16.0) },
                 onRouteClick = { route -> route.directions.firstOrNull()?.let { selection = MapSelection.Route(route.id, it.subrouteId) } },
-                modifier = Modifier.align(Alignment.BottomStart).safeDrawingPadding().padding(16.dp),
+                // На телефоне звёздочка сверху - панель раскрывается оттуда, на планшете - снизу, как на сайте.
+                atTop = !wideScreen,
+                modifier = Modifier.align(if (wideScreen) Alignment.BottomStart else Alignment.TopStart).safeDrawingPadding().padding(16.dp),
             )
         }
         if (settingsOpen) {

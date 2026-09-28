@@ -236,9 +236,27 @@
     outline-offset: 2px;
 }
 
+/* На телефоне избранное - в левом верхнем углу (MapMainContainer.module.css): панель
+   раскрывается вниз, отступ снизу не нужен. */
 @media screen and (max-width: 768px) {
     .MapFavoritesPanel {
-        margin-left: 16px;
+        margin: 0 0 0 16px;
         width: min(320px, calc(100vw - 92px));
+    }
+
+    .MapFavoritesButton {
+        margin: 0 0 0 16px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .MapFavoritesPanel,
+    .MapFavoritesButton {
+        margin-left: 12px;
+    }
+
+    .MapFavoritesButton {
+        width: 44px;
+        height: 44px;
     }
 }

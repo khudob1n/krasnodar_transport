@@ -1,0 +1,25 @@
+.MapButtonsToggle {
+    display: none;
+}
+
+.MapButtonsToggleIcon {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s ease;
+}
+
+.MapButtonsToggleIcon_opened {
+    transform: rotate(180deg);
+}
+
+@media screen and (max-width: 768px) {
+    .MapButtonsToggle {
+        display: flex;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .MapButtonsToggleIcon {
+        transition: none;
+    }
+}
