@@ -1,102 +1,96 @@
 package ru.khudob1n.krasnodar.transport
 
-import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.hasContentDescription
-import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onFirst
-import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.BySelector
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.Until
 import kotlinx.coroutines.runBlocking
-import org.junit.Rule
+import org.junit.Assert.assertNotNull
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import ru.khudob1n.krasnodar.transport.settings.MapPreferencesStore
+import ru.khudob1n.krasnodar.transport.platform.Platform
 
 /**
- * Сценарии пассажира на настоящем приложении и настоящих данных (адрес API - из сборки):
- * карта, поиск остановки, карточка, избранное, настройки, маршрут до адреса.
+ * Сценарии пользователя на живых данных - как их проходит человек: нажатия по экрану и поиск
+ * элементов по подписям TalkBack (UiAutomator). Тестовая обвязка Compose здесь не подходит: она
+ * возобновляет корутины в своём потоке, а карта (maplibre-compose) принимает вызовы только из
+ * главного.
+ *
  * Запуск: ./gradlew :app:connectedDebugAndroidTest -PapiBaseUrl=https://krasnodar-transport.khudob1n.ru
  */
-@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class ScenariosTest {
-    // Приветствие первого запуска закрывает карту - в сценариях оно не нужно. Отметку ставим
-    // до запуска экрана (правило снаружи цепочки), иначе экран успевает прочитать «не видел».
-    private val skipWelcome = object : org.junit.rules.ExternalResource() {
-        override fun before() {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
-            runBlocking { MapPreferencesStore(context).markWelcomeShown() }
-        }
-    }
-
-    val rule = createAndroidComposeRule<MainActivity>()
-
-    @get:Rule
-    val chain: org.junit.rules.RuleChain = org.junit.rules.RuleChain.outerRule(skipWelcome).around(rule)
-
+    private val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     private val timeout = 30_000L
 
-    /** Приложение открывается сразу картой. */
-    private fun openMap() {
-        rule.waitUntilAtLeastOneExists(hasContentDescription("Поиск остановок, маршрутов и вокзалов"), timeout)
+    @Before
+    fun start() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        // Приветствие первого запуска закрывает карту - в сценариях оно не нужно.
+        Platform.init(context)
+        runBlocking { AppGraph.mapPreferences.markWelcomeShown() }
+        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)!!
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+        // Первый запуск отладочной сборки после установки долгий: Android проверяет код библиотек.
+        waitFor(By.desc("Поиск остановок, маршрутов и вокзалов"), 90_000)
+    }
+
+    private fun waitFor(selector: BySelector, ms: Long = timeout): UiObject2 =
+        device.wait(Until.findObject(selector), ms).also { assertNotNull("Нет на экране: $selector", it) }
+
+    private fun type(text: String) {
+        waitFor(By.clazz("android.widget.EditText")).text = text
     }
 
     /** Поиск -> остановка: откроется карточка с расписанием. */
     private fun openStop(query: String, name: String) {
-        rule.onNodeWithContentDescription("Поиск остановок, маршрутов и вокзалов").performClick()
-        rule.onNode(hasSetTextAction()).performTextInput(query)
-        rule.waitUntilAtLeastOneExists(hasText(name), timeout)
-        rule.onAllNodesWithText(name).onFirst().performClick()
-        rule.waitUntilAtLeastOneExists(hasText("Остановка", substring = true), timeout)
+        waitFor(By.desc("Поиск остановок, маршрутов и вокзалов")).click()
+        type(query)
+        waitFor(By.text(name)).click()
+        waitFor(By.textContains("Остановка"))
     }
 
     @Test
     fun карта_остановка_избранное() {
-        openMap()
         openStop("мира", "ул.Мира")
-        rule.waitUntilAtLeastOneExists(hasText("Расписание"), timeout)
-        rule.onNodeWithContentDescription("Сохранить остановку в избранное").performClick()
-        rule.waitUntilAtLeastOneExists(hasText("В избранном"), timeout)
+        waitFor(By.text("Расписание"))
+        waitFor(By.desc("Сохранить остановку в избранное")).click()
+        waitFor(By.text("В избранном"))
         // Убираем обратно, чтобы сценарий можно было повторять.
-        rule.onNodeWithContentDescription("Убрать остановку из избранного").performClick()
+        waitFor(By.desc("Убрать остановку из избранного")).click()
     }
 
     @Test
     fun маршрут_найден_и_открывается() {
-        openMap()
-        rule.onNodeWithContentDescription("Поиск остановок, маршрутов и вокзалов").performClick()
-        rule.onNode(hasSetTextAction()).performTextInput("трамвай 4")
-        rule.waitUntilAtLeastOneExists(hasText("Трамваи"), timeout)
-        rule.onAllNodesWithText("4").onFirst().performClick()
-        rule.waitUntilAtLeastOneExists(hasText("В избранное"), timeout)
+        waitFor(By.desc("Поиск остановок, маршрутов и вокзалов")).click()
+        type("трамвай 4")
+        waitFor(By.text("Трамваи"))
+        waitFor(By.text("4")).click()
+        waitFor(By.text("В избранное"))
     }
 
     @Test
     fun настройки_открываются() {
-        openMap()
-        rule.onNodeWithContentDescription("Настройки").performClick()
-        rule.waitUntilAtLeastOneExists(hasText("Что показывать на карте"), timeout)
-        rule.onNodeWithText("Трамваи").assertExists()
+        waitFor(By.desc("Настройки")).click()
+        waitFor(By.text("Что показывать на карте"))
+        waitFor(By.text("Трамваи"))
     }
 
     @Test
     fun маршрут_от_остановки_до_адреса() {
-        openMap()
         openStop("мира", "ул.Мира")
-        rule.onNodeWithText("Отсюда").performClick()
-        rule.waitUntilAtLeastOneExists(hasText("Маршрут"), timeout)
-        rule.onNodeWithContentDescription("Куда").performClick()
-        rule.onNode(hasSetTextAction()).performTextInput("Красная 122")
-        rule.waitUntilAtLeastOneExists(hasText("Красная улица, 122"), timeout)
-        rule.onNodeWithText("Красная улица, 122").performClick()
-        // Варианты - с длительностью и временем прибытия.
-        rule.waitUntilAtLeastOneExists(hasText("Время в пути примерное", substring = true), 60_000)
+        waitFor(By.text("Отсюда")).click()
+        waitFor(By.text("Маршрут"))
+        waitFor(By.desc("Куда")).click()
+        type("Красная 122")
+        waitFor(By.text("Красная улица, 122")).click()
+        // Нашёлся вариант - у него кнопка навигатора (UiAutomator видит только то, что на экране).
+        waitFor(By.text("Поехали"), 60_000)
     }
 }

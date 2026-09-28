@@ -25,6 +25,9 @@
 	<!-- Compose Multiplatform рисует с частотой экрана (120 Гц на ProMotion). -->
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<!-- «Где я» и «Остановки рядом» (как на сайте, только пока приложение открыто). -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Чтобы показать вас на карте и найти остановки рядом.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>

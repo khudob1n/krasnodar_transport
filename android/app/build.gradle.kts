@@ -78,8 +78,7 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
     // Весь код приложения - общий с iOS: данные, логика, экраны, карта (maplibre-compose).
     implementation(project(":shared"))
-    androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.uiautomator)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.ext.junit)
     // Espresso 3.5 из ui-test падает на Android 17 (нет InputManager.getInstance) - нужна свежая.
