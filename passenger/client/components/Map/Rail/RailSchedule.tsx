@@ -273,7 +273,8 @@ export function RailSchedule({ station }: { station: RailStation }) {
                     ))}
                 </div>
             )}
-            <div className={controls.Tabs} aria-label="Выбор дня">
+            {/* Три дня - сеткой в равные колонки, как «Вылеты / Прилёты» над ними. */}
+            <div className={cn(controls.Tabs, styles.RailScheduleDays)} aria-label="Выбор дня">
                 {days.map((day) => (
                     <button
                         type="button"

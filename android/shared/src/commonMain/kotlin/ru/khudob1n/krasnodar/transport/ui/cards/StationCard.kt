@@ -153,9 +153,10 @@ fun StationCard(station: RailStation, load: suspend (String, String) -> RailSche
 private fun DepartureRow(d: RailDeparture, time: Instant?, until: Long?, event: String, airport: Boolean, accent: Color) {
     val colors = AppTheme.colors
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Column(Modifier.width(64.dp)) {
+        // Колонка времени - под «через 14 мин» целиком: иначе подпись наезжала на логотип.
+        Column(Modifier.width(84.dp)) {
             Text(time?.toLocalDateTime(CITY_ZONE)?.let { "${it.hour.pad2()}:${it.minute.pad2()}" } ?: "—", style = AppTheme.type.caption.copy(fontWeight = FontWeight.SemiBold), color = colors.textPrimary)
-            if (until != null) Text(if (until == 0L) "сейчас" else "через $until мин", style = AppTheme.type.small, color = accent)
+            if (until != null) Text(if (until == 0L) "сейчас" else "через $until мин", style = AppTheme.type.small, color = accent, maxLines = 1, softWrap = false)
         }
         if (airport) {
             // Логотипы авиакомпаний сайт берёт с pics.avs.io; здесь - код авиакомпании, как сайт при ошибке загрузки.
@@ -191,22 +192,24 @@ private fun tripTitle(title: String, event: String): String {
 @Composable
 fun Segmented(options: List<Pair<String, String>>, selected: String, icons: Map<String, ru.khudob1n.krasnodar.transport.ui.components.SvgIcon> = emptyMap(), onSelect: (String) -> Unit) {
     val colors = AppTheme.colors
+    // Во всю ширину, варианты - равными колонками (сетка, как у сайта).
     Row(
-        Modifier.background(colors.backgroundSecondary, RoundedCornerShape(12.dp)).padding(3.dp),
+        Modifier.fillMaxWidth().background(colors.backgroundSecondary, RoundedCornerShape(12.dp)).padding(3.dp),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         options.forEach { (key, label) ->
             val active = key == selected
             Row(
                 Modifier
+                    .weight(1f)
                     .background(if (active) colors.backgroundPrimary else Color.Transparent, RoundedCornerShape(10.dp))
                     .selectableNoIndication(active) { onSelect(key) }
                     .padding(horizontal = 12.dp, vertical = 7.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
             ) {
                 icons[key]?.let { TablerIcon(it, null, Modifier.size(18.dp), tint = colors.textPrimary) }
-                Text(label, style = AppTheme.type.button, color = if (active) colors.textPrimary else colors.textSecondary)
+                Text(label, style = AppTheme.type.button, color = if (active) colors.textPrimary else colors.textSecondary, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
             }
         }
     }

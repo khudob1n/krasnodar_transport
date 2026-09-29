@@ -42,7 +42,7 @@
 
 .RailScheduleItem {
     display: grid;
-    grid-template-columns: 62px minmax(0, 1fr) auto;
+    grid-template-columns: 80px minmax(0, 1fr) auto;
     align-items: center;
     gap: 11px;
     min-height: 62px;
@@ -51,7 +51,7 @@
 }
 
 .RailScheduleItemWithLogo {
-    grid-template-columns: 62px 28px minmax(0, 1fr) auto;
+    grid-template-columns: 80px 28px minmax(0, 1fr) auto;
 }
 
 .RailScheduleLogo {
@@ -270,12 +270,13 @@
 }
 
 @media screen and (max-width: 480px) {
+    /* Колонка времени - под «через 14 мин» целиком: иначе подпись наезжала на логотип. */
     .RailScheduleItem {
-        grid-template-columns: 60px minmax(0, 1fr);
+        grid-template-columns: 80px minmax(0, 1fr);
     }
 
     .RailScheduleItemWithLogo {
-        grid-template-columns: 60px 28px minmax(0, 1fr);
+        grid-template-columns: 80px 28px minmax(0, 1fr);
     }
 
     .RailSchedulePlatform {
@@ -297,4 +298,19 @@
     .RailScheduleLogoImage {
         transition: none;
     }
+}
+
+/* Дни - сетка в три равные колонки (как PillButtonGrid и «Вылеты / Прилёты»). */
+.RailScheduleDays {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: visible;
+}
+
+.RailScheduleDays > button {
+    min-width: 0;
+    padding-inline: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
