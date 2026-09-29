@@ -60,3 +60,24 @@
     font-size: 14px;
     font-weight: 500;
 }
+
+/* Плашка погоды - кнопка: открывает подробную погоду. */
+/* Двойной класс - сильнее правила ряда кнопок (на узком телефоне они 44x44): плашка - по содержимому. */
+.MapWeather.MapWeather_button {
+    width: auto;
+    border: none;
+    cursor: pointer;
+}
+
+.MapWeather_button:disabled {
+    cursor: default;
+}
+
+.MapWeather_button:focus-visible {
+    outline: 2px solid var(--functional);
+    outline-offset: 2px;
+}
+
+.MapWeather_opened {
+    color: var(--functional-tram);
+}

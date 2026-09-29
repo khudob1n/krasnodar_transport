@@ -112,3 +112,25 @@ fun JourneySkeleton() {
         }
     }
 }
+
+/** Заглушка подробной погоды: «сейчас», четыре плашки фактов и лента по часам. */
+@Composable
+fun WeatherSkeleton() {
+    val alpha = pulse()
+    Column(Modifier.fillMaxWidth().padding(16.dp).semantics { contentDescription = "Загружаем погоду" }, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Bone(Modifier.size(56.dp), radius = 12.dp, alpha = alpha)
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Bone(Modifier.fillMaxWidth(0.5f).height(20.dp), alpha = alpha)
+                Bone(Modifier.fillMaxWidth(0.35f).height(14.dp), alpha = alpha)
+            }
+        }
+        repeat(2) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Bone(Modifier.weight(1f).height(56.dp), radius = 14.dp, alpha = alpha)
+                Bone(Modifier.weight(1f).height(56.dp), radius = 14.dp, alpha = alpha)
+            }
+        }
+        Bone(Modifier.fillMaxWidth().height(92.dp), radius = 14.dp, alpha = alpha)
+    }
+}

@@ -3,6 +3,8 @@ package ru.khudob1n.krasnodar.transport.map
 import ru.khudob1n.krasnodar.transport.assets.Tabler
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -44,7 +46,7 @@ private const val TRAFFIC_REFRESH_MS = 2 * 60 * 1000L
  * одной плашкой рядом с поиском (MapControls). Пока данных нет - плашки нет.
  */
 @Composable
-fun MapBadges(loadTraffic: suspend () -> Traffic, compact: Boolean = false) {
+fun MapBadges(loadTraffic: suspend () -> Traffic, compact: Boolean = false, onWeather: () -> Unit = {}) {
     var traffic by remember { mutableStateOf<Traffic?>(null) }
     var weather by remember { mutableStateOf<Weather?>(null) }
     LaunchedEffect(Unit) { while (true) { runCatching { loadTraffic() }.onSuccess { traffic = it }; delay(TRAFFIC_REFRESH_MS) } }
@@ -52,11 +54,11 @@ fun MapBadges(loadTraffic: suspend () -> Traffic, compact: Boolean = false) {
     // Пришли данные - плашка проявляется (MapWeather сайта), а не выскакивает.
     val fade = androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(300))
     if (compact) {
-        androidx.compose.animation.AnimatedVisibility(traffic != null || weather != null, enter = fade) { CompactBadge(traffic, weather) }
+        androidx.compose.animation.AnimatedVisibility(traffic != null || weather != null, enter = fade) { CompactBadge(traffic, weather, onWeather) }
         return
     }
     androidx.compose.animation.AnimatedVisibility(traffic != null, enter = fade) { traffic?.let { TrafficBadge(it) } }
-    androidx.compose.animation.AnimatedVisibility(weather != null, enter = fade) { weather?.let { WeatherBadge(it) } }
+    androidx.compose.animation.AnimatedVisibility(weather != null, enter = fade) { weather?.let { WeatherBadge(it, onWeather) } }
 }
 
 /**
@@ -64,10 +66,12 @@ fun MapBadges(loadTraffic: suspend () -> Traffic, compact: Boolean = false) {
  * только в описании для TalkBack.
  */
 @Composable
-private fun CompactBadge(t: Traffic?, w: Weather?) {
+private fun CompactBadge(t: Traffic?, w: Weather?, onWeather: () -> Unit) {
     val description = listOfNotNull(t?.let(::trafficDescription), w?.let { "${it.kind.title}, ${temperatureOf(it)}" }).joinToString(". ")
     Row(
         Modifier.height(48.dp).shadow(6.dp, AppTheme.shapes.mapButton).background(AppTheme.colors.backgroundPrimary, AppTheme.shapes.mapButton)
+            // Нажатие - подробная погода (MapWeatherSidebar сайта).
+            .clickable(enabled = w != null, onClickLabel = "Подробная погода", role = Role.Button, onClick = onWeather)
             .padding(start = if (t != null) 12.dp else 14.dp, end = 14.dp).semantics(mergeDescendants = true) { contentDescription = description },
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -94,12 +98,16 @@ private fun trafficDescription(t: Traffic) =
     "Пробки: ${t.level} ${plural(t.level, "балл", "балла", "баллов")}${t.hint?.let { " — ${it.lowercase()}" } ?: ""}. По данным Яндекса"
 
 // Настоящий минус (U+2212), а не дефис: «−7°».
-private fun temperatureOf(w: Weather) = "${if (w.temperature > 0) "+" else if (w.temperature < 0) "−" else ""}${kotlin.math.abs(w.temperature)}°"
+internal fun temperatureOf(w: Weather) = formatTemperature(w.temperature)
+
+/** Температура с настоящим минусом: «−7°», «+15°». */
+internal fun formatTemperature(t: Int) = "${if (t > 0) "+" else if (t < 0) "−" else ""}${kotlin.math.abs(t)}°"
 
 @Composable
-private fun Badge(description: String, content: @Composable () -> Unit) {
+private fun Badge(description: String, onClick: (() -> Unit)? = null, content: @Composable () -> Unit) {
     Row(
         Modifier.height(48.dp).shadow(6.dp, AppTheme.shapes.mapButton).background(AppTheme.colors.backgroundPrimary, AppTheme.shapes.mapButton)
+            .then(if (onClick != null) Modifier.clickable(onClickLabel = "Подробная погода", role = Role.Button, onClick = onClick) else Modifier)
             .padding(start = 12.dp, end = 14.dp).semantics { contentDescription = description },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -129,7 +137,7 @@ private fun TrafficBadge(t: Traffic) {
 }
 
 @Composable
-private fun weatherIcon(w: Weather): Pair<SvgIcon, Color> {
+internal fun weatherIcon(w: Weather): Pair<SvgIcon, Color> {
     val night = !w.isDay && (w.kind == WeatherKind.Clear || w.kind == WeatherKind.Partly)
     val icon = when (w.kind) {
         WeatherKind.Clear -> if (w.isDay) Tabler.sun_high else Tabler.moon_stars
@@ -152,10 +160,10 @@ private fun weatherIcon(w: Weather): Pair<SvgIcon, Color> {
 }
 
 @Composable
-private fun WeatherBadge(w: Weather) {
+private fun WeatherBadge(w: Weather, onClick: () -> Unit) {
     val temperature = temperatureOf(w)
     val (icon, color) = weatherIcon(w)
-    Badge("${w.kind.title}, $temperature") {
+    Badge("${w.kind.title}, $temperature", onClick) {
         TablerIcon(icon, null, Modifier.size(22.dp), tint = color)
         Text(temperature, style = AppTheme.type.body.copy(fontSize = 17.sp, fontWeight = FontWeight.SemiBold), color = AppTheme.colors.textPrimary)
     }

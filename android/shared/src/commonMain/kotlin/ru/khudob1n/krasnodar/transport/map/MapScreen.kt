@@ -97,6 +97,8 @@ import ru.khudob1n.krasnodar.transport.ui.components.screenWidthDp
 private sealed interface InfoPanel {
     data object Welcome : InfoPanel
     data class ArticlePage(val slug: String) : InfoPanel
+    /** Подробная погода - по нажатию на плашку погоды. */
+    data object Weather : InfoPanel
 }
 
 private const val VEHICLES_REFRESH_MS = 5_000L
@@ -513,7 +515,12 @@ fun MapScreen(
             settingsOpened = settingsOpen,
             infoOpened = info != null,
             favoritesButton = !favoritesOpen,
-            badges = { compact -> MapBadges(repository::traffic, compact) },
+            badges = { compact ->
+                MapBadges(repository::traffic, compact, onWeather = {
+                    info = if (info == InfoPanel.Weather) null else InfoPanel.Weather
+                    if (info != null) { selection = null; following = false; settingsOpen = false }
+                })
+            },
         )
         if (searchOpen) {
             SearchScreen(
@@ -533,6 +540,7 @@ fun MapScreen(
             ) {
                 when (panel) {
                     InfoPanel.Welcome -> WelcomeCard()
+                    InfoPanel.Weather -> ru.khudob1n.krasnodar.transport.ui.cards.WeatherCard()
                     is InfoPanel.ArticlePage -> {
                         val article = articles?.firstOrNull { it.slug == panel.slug }
                         when {

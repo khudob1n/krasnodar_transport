@@ -11,7 +11,7 @@ import {
     IconSunHigh,
 } from '@tabler/icons-react';
 
-import { Weather, WEATHER_TITLES } from 'services/weather';
+import { Weather, WeatherKind, WEATHER_TITLES } from 'services/weather';
 
 import styles from './MapWeather.module.css';
 
@@ -29,14 +29,15 @@ const ICON_COLORS: Record<Weather['kind'], string> = {
 // Ночью солнца нет - луна спокойного сине-серого.
 const NIGHT_COLOR = '#8A9BD6';
 
-const iconColor = (weather: Weather) =>
+const iconColor = (weather: { kind: WeatherKind; isDay: boolean }) =>
     !weather.isDay && (weather.kind === 'clear' || weather.kind === 'partly')
         ? NIGHT_COLOR
         : ICON_COLORS[weather.kind];
 
-function WeatherIcon({ weather }: { weather: Weather }) {
+/** Иконка состояния погоды цветом состояния (ночью ясно - луна). */
+export function WeatherIcon({ weather, size = 22 }: { weather: { kind: WeatherKind; isDay: boolean }; size?: number }) {
     const props = {
-        size: 22,
+        size,
         stroke: 2,
         'aria-hidden': true,
         style: { color: iconColor(weather) },
@@ -59,25 +60,34 @@ function WeatherIcon({ weather }: { weather: Weather }) {
     }
 }
 
-/** Сама плашка: иконка состояния и температура. Без зависимостей от карты (Leaflet): рисуется и вне неё. */
-export const WeatherBadge = React.forwardRef<HTMLDivElement, { weather: Weather }>(
-    function WeatherBadge({ weather }, ref) {
-        // Настоящий минус (U+2212), а не дефис: «−7°».
-        const sign = weather.temperature > 0 ? '+' : weather.temperature < 0 ? '−' : '';
-        const temperature = `${sign}${Math.abs(weather.temperature)}°`;
-        const title = `${WEATHER_TITLES[weather.kind]}, ${temperature}`;
+/** Температура с настоящим минусом (U+2212), а не дефисом: «−7°», «+15°». */
+export const formatTemperature = (value: number) =>
+    `${value > 0 ? '+' : value < 0 ? '−' : ''}${Math.abs(value)}°`;
 
-        return (
-            <div
-                ref={ref}
-                className={styles.MapWeather}
-                title={title}
-                role="status"
-                aria-label={title}
-            >
-                <WeatherIcon weather={weather} />
-                <span>{temperature}</span>
-            </div>
-        );
-    },
-);
+/**
+ * Сама плашка: иконка состояния и температура. Без зависимостей от карты (Leaflet): рисуется и
+ * вне неё. С onClick - кнопка, открывает подробную погоду.
+ */
+export const WeatherBadge = React.forwardRef<
+    HTMLButtonElement,
+    { weather: Weather; onClick?: () => void; opened?: boolean }
+>(function WeatherBadge({ weather, onClick, opened }, ref) {
+    const temperature = formatTemperature(weather.temperature);
+    const title = `${WEATHER_TITLES[weather.kind]}, ${temperature}`;
+
+    return (
+        <button
+            ref={ref}
+            type="button"
+            className={`${styles.MapWeather} ${onClick ? styles.MapWeather_button : ''} ${opened ? styles.MapWeather_opened : ''}`}
+            title={onClick ? `${title}. Подробная погода` : title}
+            aria-label={onClick ? `${title}. Подробная погода` : title}
+            aria-expanded={onClick ? Boolean(opened) : undefined}
+            onClick={onClick}
+            disabled={!onClick}
+        >
+            <WeatherIcon weather={weather} />
+            <span>{temperature}</span>
+        </button>
+    );
+});

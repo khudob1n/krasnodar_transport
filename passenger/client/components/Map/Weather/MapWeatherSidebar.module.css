@@ -1,0 +1,217 @@
+.WeatherCard {
+    padding-bottom: 12px;
+    border-radius: 16px;
+    color: var(--text-primary);
+    background-color: var(--background-primary);
+}
+
+.WeatherHeader {
+    /* Справа место под крестик закрытия Sidepage. */
+    padding: 18px 80px 14px 22px;
+}
+
+.WeatherHeader h4 {
+    font-weight: 700;
+}
+
+.WeatherNote {
+    margin: 4px 0 0;
+    color: var(--functional);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.WeatherNow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 4px 22px 14px;
+}
+
+.WeatherNowTemp {
+    font-size: 48px;
+    font-weight: 600;
+    line-height: 52px;
+}
+
+.WeatherNowText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 16px;
+    line-height: 22px;
+}
+
+.WeatherNowText span:last-child {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* Подсказка для поездки - заметной плашкой, как предупреждения в карточках. */
+.WeatherHint {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 16px 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--background-secondary);
+    font-size: 15px;
+    line-height: 20px;
+}
+
+.WeatherHint > svg {
+    flex: none;
+    color: #3b82f6;
+}
+
+.WeatherFacts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 0 16px 16px;
+}
+
+.WeatherFact {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: var(--background-secondary);
+}
+
+.WeatherFact > svg {
+    flex: none;
+    margin-top: 1px;
+    color: var(--functional);
+}
+
+.WeatherFactBody {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.WeatherFactBody span {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+}
+
+.WeatherSectionTitle {
+    margin: 0;
+    padding: 4px 22px 8px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+}
+
+/* Лента по часам - прокрутка вбок. */
+.WeatherHours {
+    display: flex;
+    gap: 4px;
+    margin: 0 0 16px;
+    padding: 0 16px 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    list-style: none;
+}
+
+.WeatherHours::-webkit-scrollbar {
+    display: none;
+}
+
+.WeatherHour {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 52px;
+    padding: 10px 0;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.WeatherHour:first-child {
+    background: var(--background-secondary);
+}
+
+.WeatherHourTime {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+}
+
+.WeatherChance {
+    min-height: 16px;
+    color: #3b82f6;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+.WeatherDays {
+    margin: 0;
+    padding: 0 16px;
+    list-style: none;
+}
+
+.WeatherDay {
+    display: grid;
+    grid-template-columns: 1fr 28px 44px 88px;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 6px;
+    font-size: 15px;
+    line-height: 20px;
+}
+
+.WeatherDay + .WeatherDay {
+    border-top: 1px solid var(--background-secondary);
+}
+
+.WeatherDayRange {
+    text-align: right;
+    font-weight: 600;
+}
+
+.WeatherDayRange span {
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.WeatherSource {
+    margin: 12px 22px 0;
+    color: var(--functional);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+/* Скелетон, пока грузится (пульсация - как у остальных карточек). */
+.WeatherBone {
+    border-radius: 10px;
+    background: var(--background-secondary);
+    animation: WeatherPulse 1.3s ease-in-out infinite;
+}
+
+@keyframes WeatherPulse {
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .WeatherBone {
+        animation: none;
+    }
+}
