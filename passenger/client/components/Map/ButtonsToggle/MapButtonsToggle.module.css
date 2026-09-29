@@ -3,23 +3,40 @@
 }
 
 .MapButtonsToggleIcon {
-    width: 24px;
-    height: 24px;
-    transition: transform 0.2s ease;
+    width: 26px;
+    height: 26px;
 }
 
-.MapButtonsToggleIcon_opened {
-    transform: rotate(180deg);
+.MapButtonsToggleIcon line {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+        transform 0.25s ease,
+        opacity 0.2s ease;
+}
+
+/* Крестик: верхняя и нижняя полосы - диагонали через центр (6,6)-(18,18) и (6,18)-(18,6). */
+.MapButtonsToggleIcon_opened .MapButtonsToggleTop {
+    transform: translateY(6px) rotate(45deg) scaleX(1.06);
+}
+
+.MapButtonsToggleIcon_opened .MapButtonsToggleMiddle {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.MapButtonsToggleIcon_opened .MapButtonsToggleBottom {
+    transform: translate(-3px, -6px) rotate(-45deg) scaleX(1.7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .MapButtonsToggleIcon line {
+        transition: none;
+    }
 }
 
 @media screen and (max-width: 768px) {
     .MapButtonsToggle {
         display: flex;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .MapButtonsToggleIcon {
-        transition: none;
     }
 }

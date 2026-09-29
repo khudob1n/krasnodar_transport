@@ -48,7 +48,7 @@ fun MapButton(
     val shape = AppTheme.shapes.mapButton
     Box(
         modifier
-            .scale(if (pressed) 0.94f else 1f)
+            .scale(pressScale(pressed, 0.94f))
             .size(48.dp)
             .shadow(6.dp, shape, ambientColor = colors.textPrimary.copy(alpha = 0.2f))
             .background(colors.backgroundPrimary, shape)
@@ -84,7 +84,7 @@ fun PillButton(
         modifier
             .pillWidth()
             .alpha(if (enabled) 1f else 0.45f)
-            .scale(if (pressed) 0.97f else 1f)
+            .scale(pressScale(pressed, 0.97f))
             .heightIn(min = 38.dp)
             // Нажата или раскрыла своё (расписание) - подкрашена цветом functional-tram на 28 %.
             .background(if (pressed || active) lerp(background, colors.functionalTram, 0.28f) else background, AppTheme.shapes.pill)
@@ -165,4 +165,16 @@ fun PillGrid(modifier: Modifier = Modifier, content: PillGridScope.() -> Unit) {
             i += if (pair) 2 else 1
         }
     }
+}
+
+/** Кнопка чуть проседает при нажатии и плавно возвращается (как :active на сайте). */
+@Composable
+fun pressScale(pressed: Boolean, to: Float): Float {
+    val reduce = ru.khudob1n.krasnodar.transport.settings.LocalMapPreferences.current.reduceMotion
+    val scale by androidx.compose.animation.core.animateFloatAsState(
+        if (pressed) to else 1f,
+        if (reduce) androidx.compose.animation.core.snap() else androidx.compose.animation.core.tween(120),
+        label = "press",
+    )
+    return scale
 }

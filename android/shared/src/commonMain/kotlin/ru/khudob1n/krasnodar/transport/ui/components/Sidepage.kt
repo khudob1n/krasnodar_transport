@@ -2,7 +2,13 @@ package ru.khudob1n.krasnodar.transport.ui.components
 
 import ru.khudob1n.krasnodar.transport.assets.Tabler
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.tween
+import kotlinx.coroutines.delay
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -88,6 +94,25 @@ fun Sidepage(
     var settling by remember { mutableStateOf<Job?>(null) }
     LaunchedEffect(base) { if (base != null) sheet = base }
 
+    // Появление и уход (Sidepage сайта): карточка выезжает снизу, содержимое проявляется с
+    // небольшим подъёмом; закрытие крестиком или свайпом - уезжает вниз. «Уменьшить движение» - сразу.
+    val reduce = ru.khudob1n.krasnodar.transport.settings.LocalMapPreferences.current.reduceMotion
+    val appear = remember { Animatable(if (reduce) 1f else 0f) }
+    val reveal = remember { Animatable(if (reduce) 1f else 0f) }
+    val leave = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        launch { appear.animateTo(1f, tween(280, easing = FastOutSlowInEasing)) }
+        delay(60)
+        reveal.animateTo(1f, tween(420, easing = LinearOutSlowInEasing))
+    }
+    fun close(): Unit? = onClose?.let { callback ->
+        scope.launch {
+            if (!reduce) leave.animateTo(1f, tween(200, easing = FastOutLinearInEasing))
+            callback()
+        }
+        Unit
+    }
+
     // Откуда начался жест: при занятом главном потоке движения приходят пачками и скорость
     // выходит нулевой - тогда решаем по направлению.
     var dragFrom by remember { mutableStateOf<Float?>(null) }
@@ -116,7 +141,7 @@ fun Sidepage(
         val from = dragFrom
         dragFrom = null
         if (base == null) {
-            if (shift > with(density) { 80.dp.toPx() } || velocity > FLING) onClose?.invoke()
+            if (shift > with(density) { 80.dp.toPx() } || velocity > FLING) close()
             else settling = scope.launch { animate(shift, 0f, animationSpec = SNAP) { v, _ -> shift = v } }
             return
         }
@@ -124,12 +149,12 @@ fun Sidepage(
         val moved = if (from != null) sheet - from else 0f // > 0 - потянули вверх
         when {
             // Быстрый смах - по направлению.
-            velocity > FLING -> if (wasExpanded || sheet > base) animateSheet(base) else onClose?.invoke() ?: animateSheet(base)
+            velocity > FLING -> if (wasExpanded || sheet > base) animateSheet(base) else close() ?: animateSheet(base)
             velocity < -FLING -> animateSheet(expanded)
             // Медленно - по тому, куда и насколько потянули.
-            onClose != null && sheet < base * CLOSE_BELOW -> onClose()
+            onClose != null && sheet < base * CLOSE_BELOW -> close()
             moved > decide -> animateSheet(expanded)
-            moved < -decide -> if (wasExpanded) animateSheet(base) else onClose?.invoke() ?: animateSheet(base)
+            moved < -decide -> if (wasExpanded) animateSheet(base) else close() ?: animateSheet(base)
             else -> animateSheet(if (wasExpanded) expanded else base)
         }
     }
@@ -166,7 +191,7 @@ fun Sidepage(
         modifier
             .fillMaxWidth()
             .then(if (base != null) Modifier.height(with(density) { sheet.toDp() }) else Modifier)
-            .graphicsLayer { translationY = shift }
+            .graphicsLayer { translationY = shift + (1f - appear.value + leave.value) * size.height }
             .shadow(16.dp, AppTheme.shapes.sidepage)
             .background(colors.backgroundPrimary, AppTheme.shapes.sidepage)
             // Касания по пустым местам карточки не уходят на карту под ней.
@@ -187,7 +212,11 @@ fun Sidepage(
                 )
             },
     ) {
-        Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(top = 20.dp), content = content)
+        Column(
+            Modifier.fillMaxWidth().navigationBarsPadding().padding(top = 20.dp)
+                .graphicsLayer { alpha = reveal.value; translationY = (1f - reveal.value) * 12.dp.toPx() },
+            content = content,
+        )
         Box(
             Modifier
                 .align(Alignment.TopCenter)
@@ -202,7 +231,7 @@ fun Sidepage(
                     .padding(2.dp)
                     // 48 dp - минимальная зона нажатия (крестик сам 24).
                     .size(48.dp)
-                    .clickable(role = Role.Button, onClick = onClose),
+                    .clickable(role = Role.Button) { close() },
                 contentAlignment = Alignment.Center,
             ) {
                 TablerIcon(Tabler.x, "Закрыть", tint = colors.textPrimary.copy(alpha = if (colors.isDark) 0.7f else 0.5f))

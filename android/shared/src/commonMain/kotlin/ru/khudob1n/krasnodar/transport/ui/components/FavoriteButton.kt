@@ -44,7 +44,7 @@ fun FavoriteButton(active: Boolean, subject: String, onToggle: () -> Unit, modif
     Row(
         modifier
             .pillWidth()
-            .scale(if (pressed) 0.97f else 1f)
+            .scale(pressScale(pressed, 0.97f))
             .heightIn(min = 38.dp)
             .background(background, AppTheme.shapes.pill)
             .border(1.dp, border, AppTheme.shapes.pill)

@@ -30,6 +30,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import ru.khudob1n.krasnodar.transport.ui.components.screenWidthDp
@@ -89,13 +91,8 @@ fun MapControls(
                 if (favoritesButton) FavoritesButton(actions.onFavorites)
                 badges(true)
                 Box(Modifier.weight(1f))
-                val rotation by animateFloatAsState(if (expanded) 180f else 0f, label = "chevron")
-                MapButton(
-                    Tabler.chevron_down,
-                    if (expanded) "Скрыть кнопки" else "Показать кнопки",
-                    { expanded = !expanded },
-                    iconRotation = rotation,
-                )
+                // Три полосы уменьшающейся длины (Tabler menu-deep); раскрыли - складываются в крестик.
+                MenuToggle(expanded) { expanded = !expanded }
             }
         }
         if (!wide) {
@@ -192,6 +189,37 @@ private fun ZoomGroup(onZoomIn: () -> Unit, onZoomOut: () -> Unit) {
         HorizontalDivider(Modifier.padding(horizontal = 12.dp), color = colors.backgroundSecondary)
         Box(Modifier.size(48.dp).clickable(role = Role.Button, onClick = onZoomOut), contentAlignment = Alignment.Center) {
             TablerIcon(Tabler.minus, "Отдалить")
+        }
+    }
+}
+
+/** Кнопка «три полосы» - с раскрытием полосы плавно складываются в крестик (как на мобильном сайте). */
+@Composable
+private fun MenuToggle(expanded: Boolean, onClick: () -> Unit) {
+    val colors = AppTheme.colors
+    val reduce = ru.khudob1n.krasnodar.transport.settings.LocalMapPreferences.current.reduceMotion
+    val t by animateFloatAsState(if (expanded) 1f else 0f, if (reduce) androidx.compose.animation.core.snap() else androidx.compose.animation.core.tween(250), label = "menu")
+    val interaction = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+    Box(
+        Modifier
+            .size(48.dp)
+            .shadow(6.dp, AppTheme.shapes.mapButton, ambientColor = colors.textPrimary.copy(alpha = 0.2f))
+            .background(colors.backgroundPrimary, AppTheme.shapes.mapButton)
+            .clickable(interaction, indication = null, role = Role.Button, onClick = onClick)
+            .semantics { contentDescription = if (expanded) "Скрыть кнопки" else "Показать кнопки" },
+        contentAlignment = Alignment.Center,
+    ) {
+        androidx.compose.foundation.Canvas(Modifier.size(26.dp)) {
+            val u = size.width / 24f
+            fun lerp(a: Float, b: Float) = a + (b - a) * t
+            fun line(x1: Float, y1: Float, x2: Float, y2: Float, alpha: Float = 1f) = drawLine(
+                colors.textPrimary.copy(alpha = alpha), androidx.compose.ui.geometry.Offset(x1 * u, y1 * u), androidx.compose.ui.geometry.Offset(x2 * u, y2 * u),
+                strokeWidth = 2f * u, cap = androidx.compose.ui.graphics.StrokeCap.Round,
+            )
+            // Верхняя (4,6)-(20,6) -> (6,6)-(18,18); нижняя (10,18)-(20,18) -> (6,18)-(18,6); средняя тает к центру.
+            line(lerp(4f, 6f), 6f, lerp(20f, 18f), lerp(6f, 18f))
+            if (t < 1f) line(lerp(7f, 13.5f), 12f, lerp(20f, 13.5f), 12f, alpha = 1f - t)
+            line(lerp(10f, 6f), 18f, lerp(20f, 18f), lerp(18f, 6f))
         }
     }
 }

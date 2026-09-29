@@ -84,3 +84,31 @@ fun RailBoardSkeleton() {
         }
     }
 }
+
+/**
+ * Заглушка вариантов маршрута, пока идёт поиск: как строки вариантов - длительность и время
+ * крупно, ряд значков маршрутов, строка пояснения. Пульсация лесенкой сверху вниз.
+ */
+@Composable
+fun JourneySkeleton() {
+    Column(
+        Modifier.fillMaxWidth().padding(16.dp).semantics { contentDescription = "Ищем варианты" },
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+    ) {
+        listOf(0.46f, 0.38f, 0.52f).forEachIndexed { index, width ->
+            val alpha = pulse(index * 150)
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Bone(Modifier.width(72.dp).height(22.dp), alpha = alpha)
+                    Bone(Modifier.fillMaxWidth(width).height(14.dp), alpha = alpha)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Bone(Modifier.size(34.dp, 22.dp), radius = 8.dp, alpha = alpha)
+                    Bone(Modifier.size(18.dp, 22.dp), radius = 8.dp, alpha = alpha)
+                    Bone(Modifier.size(34.dp, 22.dp), radius = 8.dp, alpha = alpha)
+                }
+                Bone(Modifier.fillMaxWidth(width + 0.3f).height(12.dp), alpha = alpha)
+            }
+        }
+    }
+}

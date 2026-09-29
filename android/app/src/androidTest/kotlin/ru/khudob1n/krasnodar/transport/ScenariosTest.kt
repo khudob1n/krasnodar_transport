@@ -41,8 +41,12 @@ class ScenariosTest {
         waitFor(By.desc("Поиск остановок, маршрутов и вокзалов"), 90_000)
     }
 
-    private fun waitFor(selector: BySelector, ms: Long = timeout): UiObject2 =
-        device.wait(Until.findObject(selector), ms).also { assertNotNull("Нет на экране: $selector", it) }
+    /** Ждём элемент и даём анимации (выезд шторки, проявление) закончиться - иначе нажатие мимо. */
+    private fun waitFor(selector: BySelector, ms: Long = timeout): UiObject2 {
+        assertNotNull("Нет на экране: $selector", device.wait(Until.findObject(selector), ms))
+        Thread.sleep(600)
+        return device.findObject(selector).also { assertNotNull("Пропал с экрана: $selector", it) }
+    }
 
     private fun type(text: String) {
         waitFor(By.clazz("android.widget.EditText")).text = text

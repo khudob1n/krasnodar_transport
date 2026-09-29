@@ -49,12 +49,14 @@ fun MapBadges(loadTraffic: suspend () -> Traffic, compact: Boolean = false) {
     var weather by remember { mutableStateOf<Weather?>(null) }
     LaunchedEffect(Unit) { while (true) { runCatching { loadTraffic() }.onSuccess { traffic = it }; delay(TRAFFIC_REFRESH_MS) } }
     LaunchedEffect(Unit) { while (true) { runCatching { WeatherApi.fetch() }.onSuccess { weather = it }; delay(WeatherApi.REFRESH_MS) } }
+    // Пришли данные - плашка проявляется (MapWeather сайта), а не выскакивает.
+    val fade = androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(300))
     if (compact) {
-        if (traffic != null || weather != null) CompactBadge(traffic, weather)
+        androidx.compose.animation.AnimatedVisibility(traffic != null || weather != null, enter = fade) { CompactBadge(traffic, weather) }
         return
     }
-    traffic?.let { TrafficBadge(it) }
-    weather?.let { WeatherBadge(it) }
+    androidx.compose.animation.AnimatedVisibility(traffic != null, enter = fade) { traffic?.let { TrafficBadge(it) } }
+    androidx.compose.animation.AnimatedVisibility(weather != null, enter = fade) { weather?.let { WeatherBadge(it) } }
 }
 
 /**

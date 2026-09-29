@@ -110,7 +110,8 @@ fun JourneyCard(journey: JourneyController, onEditField: (JourneyField) -> Unit,
         val padded = Modifier.padding(16.dp)
         when {
             journey.samePoints -> Text("Откуда и куда — одно и то же место.", padded, style = note, color = colors.functional)
-            journey.status == JourneyStatus.Loading -> Text("Ищем варианты…", padded, style = note, color = colors.functional)
+            // Пока ищем - заглушка вариантов (скелетон), как на карточке остановки.
+            journey.status == JourneyStatus.Loading -> ru.khudob1n.krasnodar.transport.ui.components.JourneySkeleton()
             journey.status == JourneyStatus.Error -> Text("Не удалось загрузить данные о маршрутах. Попробуйте ещё раз чуть позже.", padded, style = note, color = colors.functional)
             journey.status == JourneyStatus.Done && journey.journeys.isEmpty() -> {
                 val max = journey.maxTransfers

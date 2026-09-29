@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -150,9 +151,19 @@ fun SearchScreen(
                 }
             }
         }
-        if (sections.isNotEmpty()) {
+        // Выдача появляется, чуть выезжая от поля и проявляясь (useReveal сайта).
+        val listShown = sections.isNotEmpty()
+        val reduce = ru.khudob1n.krasnodar.transport.settings.LocalMapPreferences.current.reduceMotion
+        val listReveal = remember { androidx.compose.animation.core.Animatable(0f) }
+        LaunchedEffect(listShown) {
+            if (!listShown) return@LaunchedEffect
+            if (reduce) listReveal.snapTo(1f)
+            else { listReveal.snapTo(0f); listReveal.animateTo(1f, androidx.compose.animation.core.tween(220, easing = androidx.compose.animation.core.LinearOutSlowInEasing)) }
+        }
+        if (listShown) {
             LazyColumn(
                 Modifier.fillMaxWidth().weight(1f, fill = false)
+                    .graphicsLayer { alpha = listReveal.value; translationY = (1f - listReveal.value) * (if (atBottom) 6 else -6).dp.toPx() }
                     .shadow(6.dp, RoundedCornerShape(24.dp))
                     .background(colors.backgroundPrimary, RoundedCornerShape(24.dp))
                     .padding(vertical = 8.dp),
