@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import classNames from 'classnames/bind';
-import { IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import { IconSettings } from '@tabler/icons-react';
 
 import { useDisablePropagation } from 'hooks/useDisablePropagation';
 import { useSmoothCorners } from 'hooks/useSmoothCorners';
@@ -42,7 +42,7 @@ export function MapSettings() {
             data-hotkey="settings"
             onClick={toggleSidebar}
         >
-            <IconAdjustmentsHorizontal size={26} stroke={2} aria-hidden="true" />
+            <IconSettings size={26} stroke={2} aria-hidden="true" />
         </button>
     );
 }

@@ -485,7 +485,8 @@ fun MapScreen(
             uiOptions = MapUiOptions { loadColor = mapBg },
             overlay = { vehicleLayer.Canvas(mapState, renderer, dark, vehicleScale, onFollow = camera::jumpTo) },
         )
-        MapControls(
+        // На телефоне открытый поиск встаёт на место своей строки внизу - кнопки карты не нужны.
+        if (!searchOpen || wideScreen) MapControls(
             actions = MapControlActions(
                 onToggleTheme = onToggleTheme,
                 onSearch = { searchOpen = true },
@@ -520,7 +521,8 @@ fun MapScreen(
                 history = history,
                 onPick = ::onSearchPick,
                 onClose = { searchOpen = false },
-                modifier = Modifier.safeDrawingPadding().padding(16.dp),
+                modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(16.dp),
+                atBottom = !wideScreen,
             )
         }
         info?.let { panel ->

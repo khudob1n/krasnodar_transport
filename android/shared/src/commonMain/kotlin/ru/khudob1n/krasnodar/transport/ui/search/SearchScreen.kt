@@ -83,6 +83,7 @@ fun SearchScreen(
     onPick: (SearchPick) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
+    atBottom: Boolean = false,
 ) {
     val colors = AppTheme.colors
     var query by remember { mutableStateOf("") }
@@ -91,8 +92,7 @@ fun SearchScreen(
     val normalized = normalizeSearch(query)
     val results = remember(catalog, normalized) { if (catalog == null || normalized.isEmpty()) null else search(catalog, normalized) }
 
-    // Выдача - над клавиатурой: список сжимается, а не уходит под неё.
-    Column(modifier.imePadding(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    val field: @Composable () -> Unit = {
         Row(
             Modifier.fillMaxWidth().heightIn(min = 48.dp)
                 .shadow(6.dp, AppTheme.shapes.search)
@@ -118,6 +118,15 @@ fun SearchScreen(
                 TablerIcon(Tabler.x, if (query.isEmpty()) "Закрыть поиск" else "Очистить", tint = colors.functional)
             }
         }
+    }
+
+    // Выдача - над клавиатурой: список сжимается, а не уходит под неё. На телефоне поле - внизу,
+    // на месте строки поиска, выдача - над ним (как мобильный сайт); на планшете - сверху.
+    Column(
+        modifier.imePadding(),
+        verticalArrangement = if (atBottom) Arrangement.spacedBy(8.dp, Alignment.Bottom) else Arrangement.spacedBy(8.dp),
+    ) {
+        if (!atBottom) field()
 
         val sections = buildList<@Composable () -> Unit> {
             if (results == null) {
@@ -151,6 +160,7 @@ fun SearchScreen(
                 items(sections) { it() }
             }
         }
+        if (atBottom) field()
     }
 }
 

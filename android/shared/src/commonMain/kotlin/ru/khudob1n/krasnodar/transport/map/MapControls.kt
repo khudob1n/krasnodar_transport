@@ -148,7 +148,7 @@ private fun TopButtons(actions: MapControlActions, nearbyOpened: Boolean, settin
     val dark = AppTheme.colors.isDark
     MapButton(Tabler.info_circle, "Как пользоваться картой", actions.onInfo, opened = infoOpened)
     MapButton(Tabler.map_pin_search, "Остановки рядом со мной", actions.onNearby, opened = nearbyOpened)
-    MapButton(Tabler.adjustments_horizontal, "Настройки", actions.onSettings, opened = settingsOpened)
+    MapButton(Tabler.settings, "Настройки", actions.onSettings, opened = settingsOpened)
     MapButton(
         if (dark) Tabler.sun else Tabler.moon,
         if (dark) "Включить светлую тему" else "Включить тёмную тему",
