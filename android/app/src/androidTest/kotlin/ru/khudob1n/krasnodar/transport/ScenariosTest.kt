@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
+import androidx.test.uiautomator.StaleObjectException
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
@@ -48,15 +49,23 @@ class ScenariosTest {
         return device.findObject(selector).also { assertNotNull("Пропал с экрана: $selector", it) }
     }
 
-    private fun type(text: String) {
-        waitFor(By.clazz("android.widget.EditText")).text = text
+    /** Compose перестраивает элементы (печатающаяся подсказка, анимации) - найденный мог устареть. */
+    private fun <T> retry(block: () -> T): T {
+        repeat(5) {
+            try { return block() } catch (_: StaleObjectException) { Thread.sleep(300) }
+        }
+        return block()
     }
+
+    private fun click(selector: BySelector) = retry { waitFor(selector).click() }
+
+    private fun type(text: String) = retry { waitFor(By.clazz("android.widget.EditText")).text = text }
 
     /** Поиск -> остановка: откроется карточка с расписанием. */
     private fun openStop(query: String, name: String) {
-        waitFor(By.desc("Поиск остановок, маршрутов и вокзалов")).click()
+        click(By.desc("Поиск остановок, маршрутов и вокзалов"))
         type(query)
-        waitFor(By.text(name)).click()
+        click(By.text(name))
         waitFor(By.textContains("Остановка"))
     }
 
@@ -64,24 +73,24 @@ class ScenariosTest {
     fun карта_остановка_избранное() {
         openStop("мира", "ул.Мира")
         waitFor(By.text("Расписание"))
-        waitFor(By.desc("Сохранить остановку в избранное")).click()
+        click(By.desc("Сохранить остановку в избранное"))
         waitFor(By.text("В избранном"))
         // Убираем обратно, чтобы сценарий можно было повторять.
-        waitFor(By.desc("Убрать остановку из избранного")).click()
+        click(By.desc("Убрать остановку из избранного"))
     }
 
     @Test
     fun маршрут_найден_и_открывается() {
-        waitFor(By.desc("Поиск остановок, маршрутов и вокзалов")).click()
+        click(By.desc("Поиск остановок, маршрутов и вокзалов"))
         type("трамвай 4")
         waitFor(By.text("Трамваи"))
-        waitFor(By.text("4")).click()
+        click(By.text("4"))
         waitFor(By.text("В избранное"))
     }
 
     @Test
     fun настройки_открываются() {
-        waitFor(By.desc("Настройки")).click()
+        click(By.desc("Настройки"))
         waitFor(By.text("Что показывать на карте"))
         waitFor(By.text("Трамваи"))
     }
@@ -89,11 +98,11 @@ class ScenariosTest {
     @Test
     fun маршрут_от_остановки_до_адреса() {
         openStop("мира", "ул.Мира")
-        waitFor(By.text("Отсюда")).click()
+        click(By.text("Отсюда"))
         waitFor(By.text("Маршрут"))
-        waitFor(By.desc("Куда")).click()
+        click(By.desc("Куда"))
         type("Красная 122")
-        waitFor(By.text("Красная улица, 122")).click()
+        click(By.text("Красная улица, 122"))
         // Нашёлся вариант - у него кнопка навигатора (UiAutomator видит только то, что на экране).
         waitFor(By.text("Поехали"), 60_000)
     }
