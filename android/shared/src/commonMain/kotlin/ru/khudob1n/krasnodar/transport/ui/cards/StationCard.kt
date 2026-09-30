@@ -95,10 +95,13 @@ fun StationCard(station: RailStation, load: suspend (String, String) -> RailSche
 
     Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
         Row(Modifier.padding(top = 4.dp, end = 48.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            val px = with(LocalDensity.current) { 32.dp.roundToPx() }
+            // Значок на плашке, слегка подкрашенной цветом вида (RailSidebarIcon сайта): 48, значок 30.
+            val px = with(LocalDensity.current) { 30.dp.roundToPx() }
             val dark = colors.isDark
             val icon = remember(station.kind, dark, renderer) { renderer.stationIcon(station.kind, px, dark) }
-            Image(icon, null, Modifier.size(32.dp))
+            Box(Modifier.size(48.dp).background(accent.copy(alpha = 0.14f), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
+                Image(icon, null, Modifier.size(30.dp))
+            }
             Column {
                 Text(KIND_LABELS[station.kind] ?: "", style = AppTheme.type.small, color = colors.textSecondary)
                 Text(station.name, style = AppTheme.type.h4, color = colors.textPrimary)

@@ -264,7 +264,7 @@ class MarkerRenderer(private val density: Density, private val measurer: TextMea
      */
     fun DrawScope.drawBody(
         center: Offset, type: TransportType, number: String, east: Boolean,
-        lowFloor: Boolean, warning: Boolean, stale: Boolean, dark: Boolean,
+        lowFloor: Boolean, warning: Boolean, stale: Boolean, dark: Boolean, badges: Boolean = true,
     ) {
         val colors = colorsOf(dark)
         val color = colors.of(type)
@@ -277,6 +277,7 @@ class MarkerRenderer(private val density: Density, private val measurer: TextMea
         // Пиктограмма Temaki 24x27 в центре капли.
         drawSvg(pictogramOf(type), Rect(cx - dp(12f), cy - dp(13f), cx + dp(12f), cy + dp(14f)), fill = color)
 
+        if (!badges) return
         // Бейджи: белые (фон карточки в тёмной теме) со скруглением 8 и кольцом 2.5 цвета транспорта.
         val top = cy - dp(14f)
         fun badge(left: Float, w: Float): Rect {

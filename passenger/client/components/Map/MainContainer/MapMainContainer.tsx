@@ -29,6 +29,7 @@ import { MapJourneyControl } from 'components/Map/Journey/MapJourneyControl';
 import { MapJourneyLayer } from 'components/Map/Journey/MapJourneyLayer';
 
 import { MapLabelCollisions } from 'components/Map/MapLabelCollisions';
+import { MapVehicleCollisions } from 'components/Map/Vehicles/MapVehicleCollisions';
 import { MapButtonsToggle } from 'components/Map/ButtonsToggle/MapButtonsToggle';
 
 import { MapVectorBasemap } from './MapVectorBasemap';
@@ -133,6 +134,7 @@ function MapMainContainer({ zoom = 16, showControls = true }) {
             <MapTransport />
             <MapJourneyLayer />
             <MapLabelCollisions />
+            <MapVehicleCollisions />
             {showControls && (
                 <>
                     <MapDeepLink />

@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.drawscope.scale
 import kotlinx.coroutines.delay
 import org.maplibre.compose.map.MapState
@@ -131,26 +132,51 @@ class VehicleLayer {
             val margin = 200f * density * scale
             // Севернее - раньше, южнее - поверх (z-index по широте у Leaflet).
             val items = tracks.values.sortedByDescending { it.motion.lat }
-            val out = ArrayList<Drawn>(items.size)
             val start = renderer.badgesStart
-            for (track in items) {
+            val u = density * scale
+
+            // Раскладка кадра: где капля и где бейджи каждой машины.
+            class Placed(val track: Track, val x: Float, val y: Float, val course: Float, val east: Boolean, val drop: Rect, val badges: Rect)
+            val placed = items.mapNotNull { track ->
                 val motion = track.motion
                 val (x, y) = project(motion.lat, motion.lng)
-                if (x < -margin || y < -margin || x > size.width + margin || y > size.height + margin) continue
-                val m = track.mark
-                val v = m.vehicle
+                if (x < -margin || y < -margin || x > size.width + margin || y > size.height + margin) return@mapNotNull null
+                val v = track.mark.vehicle
                 val course = (((motion.dir % 360) + 360) % 360).toFloat()
                 val east = course > 45 && course < 135
-                val center = Offset(x, y)
+                val width = renderer.badgesWidth(v.routeNumber, v.lowFloor || track.mark.warning) * scale
+                val near = start * scale
+                val top = y - 16.5f * u
+                val bottom = y + 12.5f * u
+                val badges = if (east) Rect(x - near - width - 2.5f * u, top, x - near + 2.5f * u, bottom)
+                else Rect(x + near - 2.5f * u, top, x + near + width + 2.5f * u, bottom)
+                Placed(track, x, y, course, east, Rect(x - 17f * u, y - 17f * u, x + 17f * u, y + 17f * u), badges)
+            }
+            // Бейджи (номер, низкий пол) не ложатся на чужие капли и на бейджи машин южнее (они
+            // поверх): если налезают - у машины остаётся только капля с пиктограммой, как
+            // прячутся налезающие подписи остановок (MapLabelCollisions сайта). Капли - все.
+            val showBadges = HashSet<Placed>()
+            val taken = ArrayList<Rect>()
+            val gap = 2f * density
+            for (p in placed.asReversed()) {
+                val b = p.badges
+                val hit = placed.any { it !== p && it.drop.overlaps(b, gap) } || taken.any { it.overlaps(b, gap) }
+                if (!hit) { showBadges += p; taken += b }
+            }
+
+            val out = ArrayList<Drawn>(placed.size)
+            for (p in placed) {
+                val m = p.track.mark
+                val v = m.vehicle
+                val center = Offset(p.x, p.y)
+                val withBadges = p in showBadges
                 scale(scale, center) {
                     with(renderer) {
-                        drawArrow(center, course - bearing, m.type, m.stale, dark)
-                        drawBody(center, m.type, v.routeNumber, east, v.lowFloor, m.warning, m.stale, dark)
+                        drawArrow(center, p.course - bearing, m.type, m.stale, dark)
+                        drawBody(center, m.type, v.routeNumber, p.east, v.lowFloor, m.warning, m.stale, dark, badges = withBadges)
                     }
                 }
-                val badges = renderer.badgesWidth(v.routeNumber, v.lowFloor || m.warning) * scale
-                val near = start * scale
-                out += if (east) Drawn(v.deviceCode, x, y, x - near - badges, x) else Drawn(v.deviceCode, x, y, x, x + near + badges)
+                out += if (withBadges) Drawn(v.deviceCode, p.x, p.y, p.badges.left, p.badges.right) else Drawn(v.deviceCode, p.x, p.y, p.x, p.x)
             }
             drawn = out
         }
@@ -187,3 +213,6 @@ internal fun projector(viewport: org.maplibre.compose.camera.Viewport, density: 
         (x * density).toFloat() to (y * density).toFloat()
     }
 }
+
+private fun Rect.overlaps(other: Rect, gap: Float) =
+    left < other.right + gap && right + gap > other.left && top < other.bottom + gap && bottom + gap > other.top

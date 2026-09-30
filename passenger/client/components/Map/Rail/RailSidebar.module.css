@@ -32,7 +32,9 @@
     min-width: 0;
 }
 
-.RailSidebarHeader span {
+/* Только подпись вида над названием: плашка значка - тоже span, и display: block ломал ей
+   центрирование (значок уезжал в угол). */
+.RailSidebarHeader > div > span {
     display: block;
     margin-bottom: 2px;
     color: var(--text-secondary);

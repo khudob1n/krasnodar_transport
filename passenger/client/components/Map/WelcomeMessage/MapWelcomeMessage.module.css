@@ -110,3 +110,40 @@
     font-size: 0.9em;
     font-weight: 600;
 }
+
+/* Телефон: шторка открывается наполовину - заголовки и отступы компактнее, иначе крупное
+   «Привет!» занимало всю видимую часть, и условных обозначений не было видно. */
+@media screen and (max-width: 768px) {
+    .MapWelcomeMessage {
+        gap: 12px;
+        padding: 12px 0 20px;
+    }
+
+    .MapWelcomeMessageRow {
+        gap: 10px;
+        padding: 0 18px;
+    }
+
+    .MapWelcomeMessage h3 {
+        font-size: 24px;
+        line-height: 28px;
+    }
+
+    .MapWelcomeMessageDescription {
+        gap: 4px;
+    }
+
+    .MapWelcomeMessageDescription p {
+        font-size: 15px;
+        line-height: 20px;
+    }
+
+    .MapWelcomeMessageNotations {
+        gap: 6px;
+    }
+
+    .MapWelcomeMessageNotation p {
+        font-size: 15px;
+        line-height: 20px;
+    }
+}
